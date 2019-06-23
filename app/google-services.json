@@ -1,0 +1,85 @@
+{
+  "project_info": {
+    "project_number": "350577491385",
+    "firebase_url": "https://weather-5a721.firebaseio.com",
+    "project_id": "weather-5a721",
+    "storage_bucket": "weather-5a721.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:350577491385:android:d936f480e732f262",
+        "android_client_info": {
+          "package_name": "com.example.android.contact_greyseed"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "350577491385-d06j2r4unqslqav1kclo42has6tf5nag.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.contact_greyseed",
+            "certificate_hash": "dc9d08403d59b22420675bdb376660e9d6ccbe78"
+          }
+        },
+        {
+          "client_id": "350577491385-6gc527rs27n4j7j61oime9n79obdkfmq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOJ6PSL2p1JvnyLWN4jt-EToKwSvcF68o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "350577491385-6gc527rs27n4j7j61oime9n79obdkfmq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:350577491385:android:6f924ae9e9a2bfed",
+        "android_client_info": {
+          "package_name": "com.example.android.weather"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "350577491385-4bkf3pc0vd852b00lar31hjnjntiscn8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.weather",
+            "certificate_hash": "dc9d08403d59b22420675bdb376660e9d6ccbe78"
+          }
+        },
+        {
+          "client_id": "350577491385-6gc527rs27n4j7j61oime9n79obdkfmq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOJ6PSL2p1JvnyLWN4jt-EToKwSvcF68o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "350577491385-6gc527rs27n4j7j61oime9n79obdkfmq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
