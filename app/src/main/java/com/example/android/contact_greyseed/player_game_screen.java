@@ -38,17 +38,18 @@ import java.util.Objects;
 
 public class player_game_screen extends AppCompatActivity implements HintTrackAdapter.OnHintClickListener{
 
-    private DatabaseReference reference,hints;
+    private DatabaseReference reference,hints,contactWord;
     private static RecyclerView recyclerView;
     private RecyclerView hintTrackView;
     static public MessageAdapter adapter;
     private HintTrackAdapter hintTrackAdapter;
     private ArrayList<Message> messages;
     private static ArrayList<HintTrack> hintTracks;
-    private String gameCode;
+    private String gameCode,word,progress;
     private int idx = 1,i=0,temp;
     private ImageButton cancelButton;
     private ArrayList<HashMap<String,String>> database;
+    TextView wordArea;
     String msg;
 
 
@@ -59,6 +60,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
 
         recyclerView = findViewById(R.id.message_box);
         hintTrackView = findViewById(R.id.hintTrackView);
+        wordArea = findViewById(R.id.wordArea);
 
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -80,15 +82,13 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
 
         reference = FirebaseDatabase.getInstance().getReference("GameChat").child(gameCode);
         hints = FirebaseDatabase.getInstance().getReference("Hints").child(gameCode);
-//
+        contactWord = FirebaseDatabase.getInstance().getReference("ContactWord").child(gameCode);
+
         adapter = new MessageAdapter(messages,player_game_screen.this);
         recyclerView.setAdapter(adapter);
 
         hintTrackAdapter = new HintTrackAdapter(hintTracks, this);
         hintTrackView.setAdapter(hintTrackAdapter);
-
-
-
     }
 
 
@@ -147,8 +147,24 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
 
             }
         });
+        contactWord.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                HashMap<String,String> dt = (HashMap<String, String>)dataSnapshot.getValue();
+                if(dt!=null) {
+                    word = dt.get("Word");
+                    progress = dt.get("Progress");
+                    word = word.toUpperCase();
 
+                    wordArea.setText(word.substring(0,Integer.parseInt(progress)+1));
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void send_msg(View view){

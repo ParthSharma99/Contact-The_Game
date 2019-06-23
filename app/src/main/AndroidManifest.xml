@@ -30,7 +30,8 @@
             android:name=".player_game_screen"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".WordVoting" />
-        <activity android:name=".WordEnter"></activity>
+        <activity android:name=".WordEnter" />
+        <activity android:name=".EnterContactWord"></activity>
     </application>
 
 </manifest>

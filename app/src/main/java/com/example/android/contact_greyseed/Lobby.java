@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.Random;
 
 public class Lobby extends AppCompatActivity {
-    static DatabaseReference ref,players,chat;
+    static DatabaseReference ref,players,chat,contactWord;
     static ArrayList<String> gameCodeName,playerNames;
     ArrayList<Message> messages;
     int max = 3;
@@ -43,6 +43,7 @@ public class Lobby extends AppCompatActivity {
         chat = FirebaseDatabase.getInstance().getReference("GameChat");
         ref = FirebaseDatabase.getInstance().getReference("Games");
         players = FirebaseDatabase.getInstance().getReference("Players");
+        contactWord = FirebaseDatabase.getInstance().getReference("ContactWord");
         playerList = findViewById(R.id.playerList);
         gameCode = findViewById(R.id.gameCode);
         messages = new ArrayList<>();
@@ -69,6 +70,10 @@ public class Lobby extends AppCompatActivity {
                     new playerName().setGameCode(name);
                     ref.child(name).setValue("Active");
                     chat.child(name).setValue(messages);
+                    HashMap<String,String> mp = new HashMap<>();
+                    mp.put("Word","");
+                    mp.put("Progress","-1");
+                    contactWord.child(name).setValue(mp);
                     playerNames.add(new playerName().getName());
                     adapter.notifyDataSetChanged();
                     players.child(name).setValue(playerNames);
@@ -113,9 +118,9 @@ public class Lobby extends AppCompatActivity {
     public void start(View view){
         if(name == ""){return;}
 
-        ref.child(name).setValue("Begun");
+//        ref.child(name).setValue("Begun");
 
-        Intent intent = new Intent(Lobby.this,player_game_screen.class);
+        Intent intent = new Intent(Lobby.this,EnterContactWord.class);
         startActivity(intent);
     }
 }

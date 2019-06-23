@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,6 +32,7 @@ public class WordEnter extends AppCompatActivity {
         setContentView(R.layout.activity_word_enter);
         reference = FirebaseDatabase.getInstance().getReference("ContactWord").child(new playerName().getGameCode());
         player_numbers = FirebaseDatabase.getInstance().getReference("Players").child(new playerName().getGameCode());
+        Toast.makeText(this, "Kahan bro", Toast.LENGTH_SHORT).show();
     }
 
     @Override

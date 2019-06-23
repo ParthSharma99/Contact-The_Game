@@ -35,12 +35,18 @@ public class WordVoting extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        players.addListenerForSingleValueEvent(new ValueEventListener() {
+        players.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                HashMap<String,String> data = (HashMap<String, String>) dataSnapshot.getValue();
+                ArrayList<String> data = (ArrayList<String>) dataSnapshot.getValue();
                 for(int i =0;i<data.size();i++){
-                    playerNames.add(String.valueOf(i));
+                    playerNames.add(data.get(i));
+                }
+                for(int i=0;i<playerNames.size();i++){
+                    RadioButton radioButton = new RadioButton(WordVoting.this);
+                    radioButton.setText(playerNames.get(i));
+                    radioButton.setId(View.generateViewId());
+                    listView.addView(radioButton);
                 }
             }
             @Override
@@ -49,12 +55,7 @@ public class WordVoting extends AppCompatActivity {
             }
         });
 
-        for(int i=0;i<playerNames.size();i++){
-            RadioButton radioButton = new RadioButton(this);
-            radioButton.setText(playerNames.get(i));
-            radioButton.setId(View.generateViewId());
-            listView.addView(radioButton);
-        }
+
     }
     public void select(View view){
         reference.child("Choose").child(new playerName().getName()).setValue(playerNames.get(listView.getCheckedRadioButtonId()));
