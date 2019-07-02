@@ -11,7 +11,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class EnterContactWord extends AppCompatActivity {
-    private DatabaseReference contactWord,ref;
+    private DatabaseReference gameWord,contactWord,ref;
     EditText word;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +19,9 @@ public class EnterContactWord extends AppCompatActivity {
         setContentView(R.layout.activity_enter_contact_word);
 
         word = findViewById(R.id.editText);
-        contactWord = FirebaseDatabase.getInstance().getReference("ContactWord");
+        gameWord = FirebaseDatabase.getInstance().getReference("GameWord");
+        contactWord = FirebaseDatabase.getInstance().getReference("ContactWord").child(new playerName().getGameCode());
+        contactWord.child("Status").setValue("No Contact");
         ref = FirebaseDatabase.getInstance().getReference("Games");
     }
 
@@ -30,10 +32,10 @@ public class EnterContactWord extends AppCompatActivity {
             Toast.makeText(this, "Enter a single word.", Toast.LENGTH_SHORT).show();
             return;
         }
-        contactWord.child(new playerName().getGameCode()).child("Word").setValue(s);
-        contactWord.child(new playerName().getGameCode()).child("Progress").setValue("0");
+        gameWord.child(new playerName().getGameCode()).child("Word").setValue(s);
+        gameWord.child(new playerName().getGameCode()).child("Progress").setValue("0");
         ref.child(new playerName().getGameCode()).setValue("Begun");
-        Intent intent = new Intent(EnterContactWord.this,player_game_screen.class);
+        Intent intent = new Intent(EnterContactWord.this,leader_game_screen.class);
         startActivity(intent);
     }
 }

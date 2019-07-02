@@ -9,27 +9,29 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class HintTrackAdapter extends RecyclerView.Adapter {
+public class HintTrackAdapterLeader extends RecyclerView.Adapter {
 
     private ArrayList<HintTrack> list;
     private OnHintClickListener onHintClickListener;
 
-    public HintTrackAdapter(ArrayList<HintTrack> list, player_game_screen listener) {
+    public HintTrackAdapterLeader(ArrayList<HintTrack> list, leader_game_screen listener) {
         this.list = list;
         this.onHintClickListener = listener;
     }
+
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.hints_track,viewGroup,false);
-        return new ViewHolder(view,onHintClickListener);
+        return new HintTrackAdapterLeader.ViewHolder(view,onHintClickListener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         final HintTrack hintTrack = list.get(i);
-        ((ViewHolder)viewHolder).number.setText(String.valueOf(i+1));
+        ((HintTrackAdapterLeader.ViewHolder)viewHolder).number.setText(String.valueOf(i+1));
 //        ((ViewHolder)viewHolder).letter.setText(hintTrack.getName().charAt(0));
 
 
@@ -43,8 +45,8 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public TextView letter;
         public TextView number;
-        OnHintClickListener clickListener;
-        public ViewHolder(@NonNull View itemView, OnHintClickListener listener) {
+        HintTrackAdapterLeader.OnHintClickListener clickListener;
+        public ViewHolder(@NonNull View itemView, HintTrackAdapterLeader.OnHintClickListener listener) {
             super(itemView);
             letter = itemView.findViewById(R.id.hint_track_letter);
             number = itemView.findViewById(R.id.hint_track_number);
@@ -62,5 +64,4 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
     public interface OnHintClickListener{
         void onClick(int pos);
     }
-
 }

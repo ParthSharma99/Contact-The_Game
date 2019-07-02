@@ -1,25 +1,15 @@
 package com.example.android.contact_greyseed;
 
-import android.animation.Animator;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.DrawableContainer;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
-import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -34,50 +24,43 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
-public class player_game_screen extends AppCompatActivity implements HintTrackAdapter.OnHintClickListener{
+public class leader_game_screen extends AppCompatActivity implements HintTrackAdapterLeader.OnHintClickListener{
 
     private DatabaseReference reference,hints,gameWord,contactWord;
     private static RecyclerView recyclerView;
     private RecyclerView hintTrackView;
     static public MessageAdapter adapter;
-    private HintTrackAdapter hintTrackAdapter;
+    private HintTrackAdapterLeader hintTrackAdapter;
     private ArrayList<Message> messages;
     private static ArrayList<HintTrack> hintTracks;
     private String gameCode,word,progress;
     private int idx = 1,i=0,temp;
-    private ImageButton cancelButton,addButton,contactButton,contactWordSend,cancelContactBtn,contactBtn;
+    private ImageButton cancelButton,addButton,contactButton;
     private ArrayList<HashMap<String,String>> database;
     TextView wordArea,makeContactMsg;
     Button sendButton;
     EditText editText;
-    String msg,contactHintTrack;
+    String msg;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_player_game_screen);
+        setContentView(R.layout.activity_leader_game_screen);
 
-        recyclerView = findViewById(R.id.message_box);
-        hintTrackView = findViewById(R.id.hintTrackView);
-        wordArea = findViewById(R.id.wordArea);
+        recyclerView = findViewById(R.id.message_box_leader);
+        hintTrackView = findViewById(R.id.hintTrackView_leader);
+        wordArea = findViewById(R.id.wordArea_leader);
 
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        cancelContactBtn = findViewById(R.id.cancelContact);
-        cancelButton = findViewById(R.id.imageCancel);
-        sendButton = findViewById(R.id.button9);
-        addButton = findViewById(R.id.imageAdd);
-        contactButton = findViewById(R.id.imageContact);
-        contactWordSend = findViewById(R.id.contactBtn);
-        makeContactMsg = findViewById(R.id.makeContactMsg);
-        editText = findViewById(R.id.hint_message);
+        sendButton = findViewById(R.id.button9_leader);
+        makeContactMsg = findViewById(R.id.makeContactMsg_leader);
+        editText = findViewById(R.id.hint_message_leader);
 
         hintTrackView.setHasFixedSize(true);
         hintTrackView.setLayoutManager(new LinearLayoutManager(this,LinearLayout.HORIZONTAL,false));
@@ -98,10 +81,10 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         contactWord = FirebaseDatabase.getInstance().getReference("ContactWord").child(gameCode);
 
 
-        adapter = new MessageAdapter(messages,player_game_screen.this);
+        adapter = new MessageAdapter(messages,leader_game_screen.this);
         recyclerView.setAdapter(adapter);
 
-        hintTrackAdapter = new HintTrackAdapter(hintTracks, this);
+        hintTrackAdapter = new HintTrackAdapterLeader(hintTracks,this);
         hintTrackView.setAdapter(hintTrackAdapter);
     }
 
@@ -121,7 +104,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                     messages.add(new Message(database.get(i).get("msg"),database.get(i).get("sender")));
                 }
 
-                adapter = new MessageAdapter(messages,player_game_screen.this);
+                adapter = new MessageAdapter(messages,leader_game_screen.this);
                 recyclerView.setAdapter(adapter);
             }
 
@@ -217,7 +200,6 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
     }
 
     public void send_msg(View view){
-        if(view.getVisibility() == View.INVISIBLE) return;
         msg = editText.getText().toString();
         if(msg.trim().equals("")){return;}
         int count_words = 0,reenter = 0;
@@ -233,82 +215,12 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
             }
         }
         if(reenter == 0){
-        messages.add(new Message(msg,new playerName().getName()));
-        editText.setText(" ");
+            messages.add(new Message(msg,new playerName().getName()));
+            editText.setText(" ");
             reference.setValue(messages);
 //            idx++;
         }
 
-    }
-
-    public String getHintContactWord(){
-        contactHintTrack = "";
-        editText.setText("");
-        editText.setHint("Enter your contact word..");
-        contactWordSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String temp = editText.getText().toString();
-                if(temp.trim().length() != 1){
-                    return;
-                }else{
-                    contactHintTrack = temp;
-                }
-            }
-        });
-        return contactHintTrack;
-    }
-
-    public void addHints(View view){
-        sendButton.setVisibility(View.INVISIBLE);
-        contactWordSend.setVisibility(View.VISIBLE);
-        cancelContactBtn.setVisibility(View.VISIBLE);
-
-        final ArrayList<String> hintMsgIndex = new ArrayList<>();
-        hintMsgIndex.add(new playerName().getName());
-        if(adapter.getSelectedCount() > 0){
-            String ccw = getHintContactWord();
-            if(ccw.length() == 0){
-                sendButton.setVisibility(View.VISIBLE);
-                contactWordSend.setVisibility(View.GONE);
-                cancelContactBtn.setVisibility(View.GONE);
-            }
-             for(int i=0;i<messages.size();i++){
-                 if(messages.get(i).isSelected()){
-                     hintMsgIndex.add(String.valueOf(i));
-                     messages.get(i).toggleSelect();
-                     recyclerView.findViewHolderForAdapterPosition(i).itemView.setBackgroundColor(Color.WHITE);
-                 }
-             }
-
-            final long[] s = {0};
-             hints.addListenerForSingleValueEvent(new ValueEventListener() {
-                 @Override
-                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                     s[0] = dataSnapshot.getChildrenCount();
-//                     Toast.makeText(player_game_screen.this, String.valueOf(s[0]), Toast.LENGTH_SHORT).show();
-                     hints.child(String.valueOf(s[0])).setValue(hintMsgIndex);
-                 }
-
-                 @Override
-                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                 }
-             });
-        }
-
-
-
-    }
-
-    public void resetAdapter(View view){
-        recyclerView.setAdapter(adapter);
-        hintTrackView.setVisibility(View.VISIBLE);
-        addButton.setVisibility(View.VISIBLE);
-        cancelButton.setVisibility(View.GONE);
-        contactButton.setVisibility(View.GONE);
-        makeContactMsg.setVisibility(View.GONE);
     }
 
     @Override
@@ -320,7 +232,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         if(temp >= messages.size()){
             return;
         }
-        MessageAdapter tempHintAdapter = new MessageAdapter(ht.track,player_game_screen.this);
+        MessageAdapter tempHintAdapter = new MessageAdapter(ht.track,leader_game_screen.this);
         recyclerView.setAdapter(tempHintAdapter);
         addButton.setVisibility(View.GONE);
         hintTrackView.setVisibility(View.GONE);
@@ -339,27 +251,6 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
 
     }
 
-    public void makeContact(View view){
-        LayoutInflater layoutInflater = getLayoutInflater();
-        AlertDialog alertDialog = new AlertDialog.Builder(this)
-                .setView(R.layout.contact_word_enter_dialog)
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                }).setPositiveButton("Done", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        contactWord.child("Status").setValue("Contact");
-                        EditText editText = findViewById(R.id.contactWord);
-                        if(editText.getText().toString().trim().equals("") || editText.getText().toString().trim().length() > 1){
-                            return;
-                        }
-                        contactWord.child(new playerName().getName()).setValue(editText.getText().toString().trim());
-                        dialogInterface.dismiss();
-                    }
-                }).create();
-    }
+
 
 }
