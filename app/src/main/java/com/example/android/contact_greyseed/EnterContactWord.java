@@ -18,6 +18,13 @@ public class EnterContactWord extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_contact_word);
 
+
+        String gameCode = new playerName().getGameCode();
+        if(gameCode == ""){
+            Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
         word = findViewById(R.id.editText);
         gameWord = FirebaseDatabase.getInstance().getReference("GameWord");
         contactWord = FirebaseDatabase.getInstance().getReference("ContactWord").child(new playerName().getGameCode());

@@ -46,16 +46,16 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
     private RecyclerView hintTrackView;
     static public MessageAdapter adapter;
     private HintTrackAdapter hintTrackAdapter;
-    private ArrayList<Message> messages;
-    private static ArrayList<HintTrack> hintTracks;
-    private String gameCode,word,progress;
-    private int idx = 1,i=0,temp;
-    private ImageButton cancelButton,addButton,contactButton,contactWordSend,cancelContactBtn,contactBtn;
+    private ArrayList<Message> messages,messagesAdapter;
+    private static ArrayList<HintTrack> hintTracks,hintAdapter;
+    private String gameCode,word,progress,ccw = "";
+    private int idx = 1,i=0,temp,hintTrackSelectIdx = 0;
+    private ImageButton cancelButton,addButton,contactButton,contactWordSend,cancelContactBtn,contactWordSendBtn;
     private ArrayList<HashMap<String,String>> database;
     TextView wordArea,makeContactMsg;
     Button sendButton;
     EditText editText;
-    String msg,contactHintTrack;
+    String msg,contactHintTrack = "";
 
 
     @Override
@@ -71,6 +71,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         cancelContactBtn = findViewById(R.id.cancelContact);
+        contactWordSendBtn = findViewById(R.id.contactBtn);
         cancelButton = findViewById(R.id.imageCancel);
         sendButton = findViewById(R.id.button9);
         addButton = findViewById(R.id.imageAdd);
@@ -83,7 +84,9 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         hintTrackView.setLayoutManager(new LinearLayoutManager(this,LinearLayout.HORIZONTAL,false));
 
         messages = new ArrayList<>();
+        messagesAdapter = new ArrayList<>();
         hintTracks = new ArrayList<>();
+        hintAdapter = new ArrayList<>();
 
         database = new ArrayList<>();
         gameCode = new playerName().getGameCode();
@@ -98,10 +101,10 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         contactWord = FirebaseDatabase.getInstance().getReference("ContactWord").child(gameCode);
 
 
-        adapter = new MessageAdapter(messages,player_game_screen.this);
+        adapter = new MessageAdapter(messagesAdapter,player_game_screen.this);
         recyclerView.setAdapter(adapter);
 
-        hintTrackAdapter = new HintTrackAdapter(hintTracks, this);
+        hintTrackAdapter = new HintTrackAdapter(hintAdapter, this);
         hintTrackView.setAdapter(hintTrackAdapter);
     }
 
@@ -116,12 +119,16 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                 database = (ArrayList<HashMap<String,String>>)dataSnapshot.getValue();
 //                Toast.makeText(player_game_screen.this, database.toString(), Toast.LENGTH_LONG).show();
                 messages.clear();
+                messagesAdapter.clear();
                 idx = database.size();
+                if(database.isEmpty())return;
                 for(i = 0;i<database.size();i++){
                     messages.add(new Message(database.get(i).get("msg"),database.get(i).get("sender")));
                 }
-
-                adapter = new MessageAdapter(messages,player_game_screen.this);
+                for(i = 1;i<messages.size();i++){
+                    messagesAdapter.add(messages.get(i));
+                }
+                adapter = new MessageAdapter(messagesAdapter,player_game_screen.this);
                 recyclerView.setAdapter(adapter);
             }
 
@@ -133,25 +140,31 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         hints.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 if(dataSnapshot.getValue() != null){}
                 ArrayList<String> temp ;
 
                 hintTracks.clear();
+                hintAdapter.clear();
                 for(int i=0;i<dataSnapshot.getChildrenCount();i++){
                     ArrayList<Message> msg_db = new ArrayList<>();
                     ArrayList<Integer> idx_db = new ArrayList<>();
                     temp = (ArrayList<String>) Objects.requireNonNull(dataSnapshot).child(String.valueOf(i)).getValue();
-                    assert temp != null;
+                    if(temp.isEmpty())return;
                     if(temp.size()>0){
                         for(int j=1;j<temp.size();j++){
-                            msg_db.add(messages.get(Integer.valueOf(temp.get(j))));
-                            idx_db.add(Integer.valueOf(temp.get(j)));
+                            int t = Integer.valueOf(temp.get(j));
+                            if(t >=messages.size())continue;
+                            msg_db.add(messages.get(t));
+                            idx_db.add(t);
                         }
 
 //                        Toast.makeText(player_game_screen.this, idx_db.toString(), Toast.LENGTH_SHORT).show();
                         hintTracks.add(new HintTrack(idx_db,msg_db));
-//                        Toast.makeText(player_game_screen.this, hintTracks.get(hintTracks.size()-1).list.toString(), Toast.LENGTH_SHORT).show();
-                        hintTrackAdapter.notifyDataSetChanged();
+                        if(i>0){
+                            hintAdapter.add(hintTracks.get(i));
+                            hintTrackAdapter.notifyDataSetChanged();
+                        }
                     }
                 }
             }
@@ -183,29 +196,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 HashMap<String,String> data = (HashMap<String, String>) dataSnapshot.getValue();
-                if(!data.get("Status").equals("No Contact")){
-                    if(editText == null || sendButton == null || recyclerView == null ||
-                            addButton==null|| contactButton==null||makeContactMsg==null||cancelButton==null)
-                        return;
-                    editText.setVisibility(View.INVISIBLE);
-                    sendButton.setVisibility(View.INVISIBLE);
-//                    recyclerView.setVisibility(View.GONE);
-                    addButton.setVisibility(View.GONE);
-                    contactButton.setVisibility(View.VISIBLE);
-                    makeContactMsg.setVisibility(View.VISIBLE);
-                    cancelButton.setVisibility(View.VISIBLE);
-                }else{
-                    if(editText == null || sendButton == null || recyclerView == null ||
-                            addButton==null|| contactButton==null||makeContactMsg==null||cancelButton==null)
-                        return;
-                    editText.setVisibility(View.VISIBLE);
-                    sendButton.setVisibility(View.VISIBLE);
-//                    recyclerView.setVisibility(View.VISIBLE);
-                    addButton.setVisibility(View.VISIBLE);
-                    contactButton.setVisibility(View.GONE);
-                    makeContactMsg.setVisibility(View.GONE);
-                    cancelButton.setVisibility(View.GONE);
-                }
+
 
             }
 
@@ -233,71 +224,111 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
             }
         }
         if(reenter == 0){
-        messages.add(new Message(msg,new playerName().getName()));
-        editText.setText(" ");
+            messages.add(new Message(msg,new playerName().getName()));
+            editText.setText(" ");
             reference.setValue(messages);
-//            idx++;
         }
 
     }
 
-    public String getHintContactWord(){
-        contactHintTrack = "";
-        editText.setText("");
-        editText.setHint("Enter your contact word..");
-        contactWordSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String temp = editText.getText().toString();
-                if(temp.trim().length() != 1){
-                    return;
-                }else{
-                    contactHintTrack = temp;
+    public void getHintContactWord(View view){
+        String temp = editText.getText().toString().trim();
+        if(!checkMessage(temp)){
+            Toast.makeText(this, "Check the Game word.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(!temp.contains(" ") && !temp.equals("")){
+//            Toast.makeText(this, contactHintTrack, Toast.LENGTH_SHORT).show();
+            if(adapter.getSelectedCount() > 0) {
+
+                final ArrayList<String> hintMsgIndex = new ArrayList<>();
+                hintMsgIndex.add(new playerName().getName());
+
+
+                for (int i = 0; i < messagesAdapter.size(); i++) {
+                    if (messagesAdapter.get(i).isSelected()) {
+                        hintMsgIndex.add(String.valueOf(i));
+                        messagesAdapter.get(i).toggleSelect();
+                        recyclerView.findViewHolderForAdapterPosition(i).itemView.setBackgroundColor(Color.WHITE);
+                    }
                 }
+                hintMsgIndex.add("1");
+                final long[] s = {0};
+                final String word = temp;
+                hints.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        s[0] = dataSnapshot.getChildrenCount();
+//                     Toast.makeText(player_game_screen.this, String.valueOf(s[0]), Toast.LENGTH_SHORT).show();
+                        hints.child(String.valueOf(s[0])).setValue(hintMsgIndex);
+                        contactWord.child(String.valueOf(s[0])).child("0").child(new playerName().getName()).setValue(word);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
-        });
-        return contactHintTrack;
+            sendButton.setVisibility(View.VISIBLE);
+            contactWordSendBtn.setVisibility(View.GONE);
+            cancelContactBtn.setVisibility(View.GONE);
+            editText.setText("");
+            editText.setHint("Type a hint..");
+        }
+
+
+
     }
 
     public void addHints(View view){
+
         sendButton.setVisibility(View.INVISIBLE);
-        contactWordSend.setVisibility(View.VISIBLE);
+        contactWordSendBtn.setVisibility(View.VISIBLE);
         cancelContactBtn.setVisibility(View.VISIBLE);
+        editText.setText("");
+        editText.setHint("Enter your contact word..");
 
-        final ArrayList<String> hintMsgIndex = new ArrayList<>();
-        hintMsgIndex.add(new playerName().getName());
-        if(adapter.getSelectedCount() > 0){
-            String ccw = getHintContactWord();
-            if(ccw.length() == 0){
-                sendButton.setVisibility(View.VISIBLE);
-                contactWordSend.setVisibility(View.GONE);
-                cancelContactBtn.setVisibility(View.GONE);
-            }
-             for(int i=0;i<messages.size();i++){
-                 if(messages.get(i).isSelected()){
-                     hintMsgIndex.add(String.valueOf(i));
-                     messages.get(i).toggleSelect();
-                     recyclerView.findViewHolderForAdapterPosition(i).itemView.setBackgroundColor(Color.WHITE);
-                 }
-             }
-
-            final long[] s = {0};
-             hints.addListenerForSingleValueEvent(new ValueEventListener() {
-                 @Override
-                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                     s[0] = dataSnapshot.getChildrenCount();
-//                     Toast.makeText(player_game_screen.this, String.valueOf(s[0]), Toast.LENGTH_SHORT).show();
-                     hints.child(String.valueOf(s[0])).setValue(hintMsgIndex);
-                 }
-
-                 @Override
-                 public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                 }
-             });
-        }
-
+//        if(adapter.getSelectedCount() > 0) {
+//
+//            final ArrayList<String> hintMsgIndex = new ArrayList<>();
+//            hintMsgIndex.add(new playerName().getName());
+//
+//            if(contactHintTrack.equals("")){
+////                sendButton.setVisibility(View.VISIBLE);
+////                contactWordSendBtn.setVisibility(View.GONE);
+////                cancelContactBtn.setVisibility(View.GONE);
+////                editText.setText("");
+////                editText.setHint("Type a hint..");
+//                return;
+//            }
+//            for (int i = 0; i < messages.size(); i++) {
+//                if (messages.get(i).isSelected()) {
+//                    hintMsgIndex.add(String.valueOf(i));
+//                    messages.get(i).toggleSelect();
+//                    recyclerView.findViewHolderForAdapterPosition(i).itemView.setBackgroundColor(Color.WHITE);
+//                }
+//            }
+//            hintMsgIndex.add("1");
+//            final long[] s = {0};
+//            hints.addListenerForSingleValueEvent(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//                    s[0] = dataSnapshot.getChildrenCount();
+////                     Toast.makeText(player_game_screen.this, String.valueOf(s[0]), Toast.LENGTH_SHORT).show();
+//                    hints.child(String.valueOf(s[0])).setValue(hintMsgIndex);
+//                    contactWord.child(String.valueOf(s[0])).child("0").child(new playerName().getName()).setValue(contactHintTrack);
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                }
+//            });
+//        }
+//        contactHintTrack = "";
 
 
     }
@@ -309,17 +340,16 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         cancelButton.setVisibility(View.GONE);
         contactButton.setVisibility(View.GONE);
         makeContactMsg.setVisibility(View.GONE);
+        editText.setHint("Type a hint..");
     }
 
     @Override
     public void onClick(int pos) {
         editText.setText("");
         editText.setHint("Enter your Contact word...");
-        HintTrack ht = hintTracks.get(pos);
-        temp = ht.getNext();
-        if(temp >= messages.size()){
-            return;
-        }
+        HintTrack ht = hintAdapter.get(pos);
+        hintTrackSelectIdx = pos;
+
         MessageAdapter tempHintAdapter = new MessageAdapter(ht.track,player_game_screen.this);
         recyclerView.setAdapter(tempHintAdapter);
         addButton.setVisibility(View.GONE);
@@ -340,26 +370,45 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
     }
 
     public void makeContact(View view){
-        LayoutInflater layoutInflater = getLayoutInflater();
-        AlertDialog alertDialog = new AlertDialog.Builder(this)
-                .setView(R.layout.contact_word_enter_dialog)
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                }).setPositiveButton("Done", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        contactWord.child("Status").setValue("Contact");
-                        EditText editText = findViewById(R.id.contactWord);
-                        if(editText.getText().toString().trim().equals("") || editText.getText().toString().trim().length() > 1){
-                            return;
-                        }
-                        contactWord.child(new playerName().getName()).setValue(editText.getText().toString().trim());
-                        dialogInterface.dismiss();
-                    }
-                }).create();
+
+        final String temp = editText.getText().toString().trim();
+        if(!checkMessage(temp)){
+            Toast.makeText(this, "Check the Game word.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(temp.equals("") || temp.contains(" "))return;
+        contactWord.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                long cnt = dataSnapshot.child(String.valueOf(hintTrackSelectIdx)).getChildrenCount();
+                if(!dataSnapshot.child(String.valueOf(hintTrackSelectIdx)).child("0")
+                        .getValue().toString().equals(new playerName().getName()))
+                {
+                    contactWord.child(String.valueOf(hintTrackSelectIdx)).child(String.valueOf(cnt)).child(new playerName().getName()).setValue(temp);
+//                    hintTrackAdapter.incrementContactCount(,);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        editText.setText("");
+        resetAdapter(view);
+    }
+
+    private boolean checkMessage(String s){
+        int temp = Integer.valueOf(progress);
+        String t = word.toLowerCase();
+        s = s.toLowerCase();
+        if(s.length() < temp)return false;
+        for (int i = 0; i < temp; i++) {
+            if(s.charAt(i) != t.charAt(i)){
+                return false;
+            }
+        }
+        return true;
     }
 
 }

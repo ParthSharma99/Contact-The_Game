@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.Random;
 
 public class Lobby extends AppCompatActivity {
-    static DatabaseReference ref,players,chat,contactWord;
+    static DatabaseReference ref,players,chat,contactWord,hints;
     static ArrayList<String> gameCodeName,playerNames;
     ArrayList<Message> messages;
     int max = 3;
@@ -44,6 +44,9 @@ public class Lobby extends AppCompatActivity {
         ref = FirebaseDatabase.getInstance().getReference("Games");
         players = FirebaseDatabase.getInstance().getReference("Players");
         contactWord = FirebaseDatabase.getInstance().getReference("ContactWord");
+        hints = FirebaseDatabase.getInstance().getReference("Hints");
+
+
         playerList = findViewById(R.id.playerList);
         gameCode = findViewById(R.id.gameCode);
         messages = new ArrayList<>();
@@ -70,10 +73,13 @@ public class Lobby extends AppCompatActivity {
                     new playerName().setGameCode(name);
                     ref.child(name).setValue("Active");
                     chat.child(name).setValue(messages);
-                    HashMap<String,String> mp = new HashMap<>();
-                    mp.put("Word","");
-                    mp.put("Progress","-1");
-                    contactWord.child(name).setValue(mp);
+//                    contactWord.child(name).setValue(mp);
+                    ArrayList<String> hintMsgIndex = new ArrayList<>();
+                    hintMsgIndex.add("YO");
+                    hintMsgIndex.add("0");
+                    hintMsgIndex.add("0");
+                    hintMsgIndex.add("0");
+                    hints.child(name).child("0").setValue(hintMsgIndex);
                     playerNames.add(new playerName().getName());
                     adapter.notifyDataSetChanged();
                     players.child(name).setValue(playerNames);

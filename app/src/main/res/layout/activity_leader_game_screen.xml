@@ -55,7 +55,9 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="9dp"
         android:layout_marginBottom="2dp"
+        android:onClick="send_msg"
         android:text="Send"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/hint_message_leader" />
@@ -84,7 +86,7 @@
         android:layout_marginEnd="8dp"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/button9_leader"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/challengeContact"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/divider_leader" />
 
@@ -112,6 +114,52 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.562"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/cancelHintSelect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4dp"
+        android:onClick="cancel"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/button9_leader"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@android:drawable/btn_dialog" />
+
+    <Button
+        android:id="@+id/challengeContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:onClick="guess"
+        android:text="Guess"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/button9_leader"
+        app:layout_constraintEnd_toStartOf="@+id/cancelHintSelect" />
+
+    <ImageButton
+        android:id="@+id/cancelGuess"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@android:drawable/btn_dialog" />
+
+    <ImageButton
+        android:id="@+id/sendGuess"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:onClick="setSendGuess"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cancelGuess"
+        app:srcCompat="@android:drawable/checkbox_on_background" />
 
 
 </android.support.constraint.ConstraintLayout>
