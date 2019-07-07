@@ -55,7 +55,6 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
             number = itemView.findViewById(R.id.hint_track_number);
             no_contacts = itemView.findViewById(R.id.number_of_contacts);
             this.clickListener = listener;
-
             itemView.setOnClickListener(this);
         }
 

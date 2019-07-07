@@ -12,6 +12,7 @@
         android:layout_height="37dp"
         android:layout_marginTop="6dp"
         android:layout_marginEnd="7dp"
+        android:onClick="leave"
         android:text="X"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -35,20 +36,23 @@
     <EditText
         android:id="@+id/hint_message"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="25dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="4dp"
+        android:background="@null"
         android:ems="10"
         android:hint="Type a hint"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button9"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/button9" />
 
     <Button
         android:id="@+id/button9"
-        style="@android:style/Widget.Button"
+        style="@android:style/Widget.Material.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="2dp"
@@ -165,6 +169,7 @@
         android:layout_width="45dp"
         android:layout_height="44dp"
         android:layout_marginBottom="4dp"
+        android:onClick="resetAdapter"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/contactBtn"

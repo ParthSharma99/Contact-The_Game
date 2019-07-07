@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -41,7 +42,7 @@ import java.util.Objects;
 
 public class player_game_screen extends AppCompatActivity implements HintTrackAdapter.OnHintClickListener{
 
-    private DatabaseReference reference,hints,gameWord,contactWord;
+    private DatabaseReference reference,hints,gameWord,contactWord,players,games;
     private static RecyclerView recyclerView;
     private RecyclerView hintTrackView;
     static public MessageAdapter adapter;
@@ -52,6 +53,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
     private int idx = 1,i=0,temp,hintTrackSelectIdx = 0;
     private ImageButton cancelButton,addButton,contactButton,contactWordSend,cancelContactBtn,contactWordSendBtn;
     private ArrayList<HashMap<String,String>> database;
+    private ArrayList<String> playerNames;
     TextView wordArea,makeContactMsg;
     Button sendButton;
     EditText editText;
@@ -99,12 +101,14 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         hints = FirebaseDatabase.getInstance().getReference("Hints").child(gameCode);
         gameWord = FirebaseDatabase.getInstance().getReference("GameWord").child(gameCode);
         contactWord = FirebaseDatabase.getInstance().getReference("ContactWord").child(gameCode);
+        players = FirebaseDatabase.getInstance().getReference("Players").child(gameCode);
+        games = FirebaseDatabase.getInstance().getReference("Games").child(gameCode);
 
 
         adapter = new MessageAdapter(messagesAdapter,player_game_screen.this);
         recyclerView.setAdapter(adapter);
 
-        hintTrackAdapter = new HintTrackAdapter(hintAdapter, this);
+        hintTrackAdapter = new HintTrackAdapter(hintTracks, this);
         hintTrackView.setAdapter(hintTrackAdapter);
     }
 
@@ -130,6 +134,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                 }
                 adapter = new MessageAdapter(messagesAdapter,player_game_screen.this);
                 recyclerView.setAdapter(adapter);
+                recyclerView.smoothScrollToPosition(adapter.getItemCount());
             }
 
             @Override
@@ -145,8 +150,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                 ArrayList<String> temp ;
 
                 hintTracks.clear();
-                hintAdapter.clear();
-                for(int i=0;i<dataSnapshot.getChildrenCount();i++){
+                for(int i=1;i<dataSnapshot.getChildrenCount();i++){
                     ArrayList<Message> msg_db = new ArrayList<>();
                     ArrayList<Integer> idx_db = new ArrayList<>();
                     temp = (ArrayList<String>) Objects.requireNonNull(dataSnapshot).child(String.valueOf(i)).getValue();
@@ -160,11 +164,14 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                         }
 
 //                        Toast.makeText(player_game_screen.this, idx_db.toString(), Toast.LENGTH_SHORT).show();
-                        hintTracks.add(new HintTrack(idx_db,msg_db));
-                        if(i>0){
-                            hintAdapter.add(hintTracks.get(i));
-                            hintTrackAdapter.notifyDataSetChanged();
-                        }
+                        hintTracks.add(new HintTrack(idx_db,msg_db,temp.get(0)));
+                        hintTrackAdapter.notifyDataSetChanged();
+                        hintTrackView.smoothScrollToPosition(hintTrackAdapter.getItemCount());
+//                        if(i>0){
+//                            hintAdapter.add(hintTracks.get(i));
+//                            hintTrackAdapter.notifyDataSetChanged();
+//                            hintTrackView.smoothScrollToPosition(hintTrackAdapter.getItemCount());
+//                        }
                     }
                 }
             }
@@ -198,6 +205,21 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                 HashMap<String,String> data = (HashMap<String, String>) dataSnapshot.getValue();
 
 
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        games.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue(String.class).equals("End")){
+                    Intent intent = new Intent(player_game_screen.this,MainActivity.class);
+                    intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    startActivity(intent);
+                }
             }
 
             @Override
@@ -247,12 +269,12 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
 
                 for (int i = 0; i < messagesAdapter.size(); i++) {
                     if (messagesAdapter.get(i).isSelected()) {
-                        hintMsgIndex.add(String.valueOf(i));
+                        hintMsgIndex.add(String.valueOf(i+1));
                         messagesAdapter.get(i).toggleSelect();
                         recyclerView.findViewHolderForAdapterPosition(i).itemView.setBackgroundColor(Color.WHITE);
                     }
                 }
-                hintMsgIndex.add("1");
+//                hintMsgIndex.add("1");
                 final long[] s = {0};
                 final String word = temp;
                 hints.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -340,16 +362,17 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         cancelButton.setVisibility(View.GONE);
         contactButton.setVisibility(View.GONE);
         makeContactMsg.setVisibility(View.GONE);
+        editText.setText("");
         editText.setHint("Type a hint..");
+
     }
 
     @Override
     public void onClick(int pos) {
         editText.setText("");
         editText.setHint("Enter your Contact word...");
-        HintTrack ht = hintAdapter.get(pos);
+        HintTrack ht = hintTracks.get(pos);
         hintTrackSelectIdx = pos;
-
         MessageAdapter tempHintAdapter = new MessageAdapter(ht.track,player_game_screen.this);
         recyclerView.setAdapter(tempHintAdapter);
         addButton.setVisibility(View.GONE);
@@ -386,6 +409,8 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                 {
                     contactWord.child(String.valueOf(hintTrackSelectIdx)).child(String.valueOf(cnt)).child(new playerName().getName()).setValue(temp);
 //                    hintTrackAdapter.incrementContactCount(,);
+                    hintTracks.get(hintTrackSelectIdx).count+=1;
+                    hintTrackAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -409,6 +434,29 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
             }
         }
         return true;
+    }
+
+    public void leave(View view){
+        players.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                while(dataSnapshot.child(gameCode).getValue() == null){}
+                playerNames =(ArrayList<String>) dataSnapshot.child(gameCode).getValue();
+                playerNames.remove(new playerName().getName());
+                ArrayAdapter<String> adp= new ArrayAdapter<>(player_game_screen.this,android.R.layout.simple_list_item_1,playerNames);
+                players.child(gameCode).setValue(playerNames);
+                Intent intent = new Intent(player_game_screen.this,MainActivity.class);
+                intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
 }

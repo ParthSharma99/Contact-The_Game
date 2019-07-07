@@ -66,7 +66,7 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.hasChild(name)){
-                    while(dataSnapshot.hasChild(name))
+                    while(dataSnapshot.hasChild(name) && dataSnapshot.child(name).getValue(String.class).equals("Begun"))
                     name = gameCodeName.get(new Random().nextInt(max)) + " " + gameCodeName.get(new Random().nextInt(max)) ;
                 }else{
                     gameCode.setText(name);
@@ -116,7 +116,7 @@ public class Lobby extends AppCompatActivity {
     }
 
     public void cancel(View view){
-        ref.child(name).removeValue();
+        ref.child(name).setValue("End");
         players.child(name).removeValue();
         finish();
     }

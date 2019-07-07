@@ -35,7 +35,7 @@ public class EnterCode extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 //                Toast.makeText(EnterCode.this, dataSnapshot.getValue().toString(), Toast.LENGTH_SHORT).show();
-                if (dataSnapshot.hasChild(text.getText().toString())) {
+                if (dataSnapshot.hasChild(text.getText().toString().toUpperCase())) {
                     enter = true;
                 }
                 if(enter){
@@ -44,13 +44,14 @@ public class EnterCode extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 //                            Toast.makeText(EnterCode.this, dataSnapshot.child(text.getText().toString()).getValue().toString(), Toast.LENGTH_SHORT).show();
-                            while(dataSnapshot.child(text.getText().toString()).getValue() == null){
+                            while(dataSnapshot.child(text.getText().toString().toUpperCase()).getValue() == null){
 
                             }
                             playerNames =(ArrayList<String>) dataSnapshot.child(text.getText().toString()).getValue();
-                            playerNames.add(new playerName().getName());
+                            if(!playerNames.contains(new playerName().getName()))
+                                playerNames.add(new playerName().getName());
 //                            Toast.makeText(EnterCode.this, playerNames.toString(), Toast.LENGTH_SHORT).show();
-                            players.child(text.getText().toString()).setValue(playerNames);
+                            players.child(text.getText().toString().toUpperCase()).setValue(playerNames);
                             Intent intent = new Intent(EnterCode.this,Lobby_other.class);
                             intent.putExtra("gameCode",text.getText().toString());
                             startActivity(intent);

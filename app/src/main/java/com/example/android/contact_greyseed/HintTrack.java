@@ -5,12 +5,14 @@ import java.util.ArrayList;
 public class HintTrack {
     public ArrayList<Message> track;
     public ArrayList<Integer> list;
+    public String author = "";
     public int count = 1;
     private int idx = 0;
 
-    public HintTrack( ArrayList<Integer> list,ArrayList<Message> track) {
+    public HintTrack( ArrayList<Integer> list,ArrayList<Message> track,String a) {
         this.list = list;
         this.track = track;
+        this.author = a;
     }
     public int getNext(){
         int temp;
