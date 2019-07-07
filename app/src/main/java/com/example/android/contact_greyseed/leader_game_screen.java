@@ -42,7 +42,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
     private ArrayList<HashMap<String,String>> database;
     private Set<String> contactCommonWords;
     private ArrayList<String> playerNames;
-    ArrayList<Pair<ArrayList<String>,ArrayList<String>>> hintTrackContactData;
+    ArrayList<HashMap<String,String>> hintTrackContactData;
     TextView wordArea,makeContactMsg;
     Button sendButton,guessBtn,challengeBtn;
     EditText editText;
@@ -192,17 +192,22 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         contactWord.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(int j =0;j<dataSnapshot.getChildrenCount();j++) {
-                    ArrayList<String> getWords = new ArrayList<>();
-                    ArrayList<String> getPlayer = new ArrayList<>();
-                    long size = dataSnapshot.child(String.valueOf(j)).getChildrenCount();
-                    for (int i = 0; i < size; i++) {
-                        HashMap<String, String> data = (HashMap<String, String>) dataSnapshot.child(String.valueOf(j)).child(String.valueOf(i)).getValue();
-                        for (String t : data.keySet()) {
-                            getWords.add(data.get(t));
-                            getPlayer.add(t);
-                        }
-                    }
+                for(int j =1;j<dataSnapshot.getChildrenCount();j++) {
+                    HashMap<String, String> data = (HashMap<String, String>) dataSnapshot.child(String.valueOf(j)).getValue();
+                    if(data == null || data.isEmpty())return;
+                    Long cnt = dataSnapshot.child(String.valueOf(j)).getChildrenCount();
+                    hintTracks.get(j-1).count = cnt;
+                    Toast.makeText(leader_game_screen.this, String.valueOf(cnt), Toast.LENGTH_SHORT).show();
+                    hintTrackContactData.add(data);
+                    hintTrackAdapter = new HintTrackAdapter(hintTracks, leader_game_screen.this);
+                    hintTrackView.setAdapter(hintTrackAdapter);
+//                    for (int i = 0; i < size; i++) {
+//                        HashMap<String, String> data = (HashMap<String, String>) dataSnapshot.child(String.valueOf(j)).child(String.valueOf(i)).getValue();
+//                        for (String t : data.keySet()) {
+//                            getWords.add(data.get(t));
+//                            getPlayer.add(t);
+//                        }
+//                    }
 //                    HashMap<String, Integer> commonWords = new HashMap<>();
 //                    for (int i = 0; i < getWords.size(); i++) {
 //                        if (commonWords.containsKey(getWords.get(i))) {
@@ -213,7 +218,6 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
 //                            commonWords.put(getWords.get(i), 1);
 //                        }
 //                    }
-                    hintTrackContactData.add(j,new Pair<>(getPlayer,getWords));
                 }
             }
 
@@ -323,6 +327,8 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
     }
 
     public void setSendGuess(View view){
+
+
         if(guessTime == 2){
             guessTime = 0;
             int temp = Integer.valueOf(progress);
@@ -339,7 +345,22 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
 
 
         }else {
+            if(hintTracks.get(hintTrackSelectIdx-1).count <2){
+                Toast.makeText(this, "Hint track has no contact.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             String temp = editText.getText().toString().trim().toLowerCase();
+            String author = hintTracks.get(hintTrackSelectIdx-1).author;
+
+            String authorWord = "";
+
+            if(hintTrackContactData.get(hintTrackSelectIdx-1).containsKey(author)){
+                authorWord = hintTrackContactData.get(hintTrackSelectIdx-1).get(author);
+            }else{
+                return;
+            }
+
             if (temp.contains(" ")) {
                 return;
             }
@@ -347,17 +368,11 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
                 Toast.makeText(this, "Check the Game word.", Toast.LENGTH_SHORT).show();
                 return;
             }
-            boolean c = false;
-            for(int i=0;i<hintTrackContactData.get(hintTrackSelectIdx).second.size();i++){
-                if(hintTrackContactData.get(hintTrackSelectIdx).second.get(i).equals(temp)){
-                    c=true;
-                    break;
-                }
-            }
-            if (c) {
+            authorWord = authorWord.toLowerCase();
+            if(temp.equals(authorWord)){
                 Toast.makeText(this, "You Guessed it!", Toast.LENGTH_SHORT).show();
                 setCancelGuess(view);
-            } else {
+            }else{
                 Toast.makeText(this, "Sorry", Toast.LENGTH_SHORT).show();
                 guessTime++;
             }
@@ -368,13 +383,15 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         int temp = Integer.valueOf(progress);
         String t = word.toLowerCase();
         s = s.toLowerCase();
-        if(s.length() < temp)return false;
-        for (int i = 0; i < temp; i++) {
-            if(s.charAt(i) != t.charAt(i)){
-                return false;
-            }
+        if(s.length() < temp){
+            Toast.makeText(this, "Checked0", Toast.LENGTH_SHORT).show();
+            return false;
         }
-        return true;
+        if(t.substring(0,temp+1).equals(s.substring(0,temp+1))){
+            Toast.makeText(this, "Checked2", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return false;
     }
 
     public void leave(View view){

@@ -6,7 +6,7 @@ public class HintTrack {
     public ArrayList<Message> track;
     public ArrayList<Integer> list;
     public String author = "";
-    public int count = 1;
+    public long count = 1;
     private int idx = 0;
 
     public HintTrack( ArrayList<Integer> list,ArrayList<Message> track,String a) {

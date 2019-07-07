@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="120dp"
         android:background="@null"
-        android:ems="10"
         android:hint="ENTER WORD"
         android:inputType="textCapCharacters"
         android:letterSpacing="1"

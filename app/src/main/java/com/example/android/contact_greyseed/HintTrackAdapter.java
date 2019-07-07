@@ -36,6 +36,15 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
         ((ViewHolder)viewHolder).number.setText(String.valueOf(i+1));
         ((ViewHolder)viewHolder).no_contacts.setText(String.valueOf(hintTrack.count));
 
+//        ((ViewHolder)viewHolder).letter.setText(String.valueOf(hintTrack.author.toUpperCase().charAt(0)));
+        if(hintTrack.count > 1){
+
+            ((ViewHolder)viewHolder).letter.setBackgroundResource(R.drawable.hints_active);
+        }else{
+
+            ((ViewHolder)viewHolder).letter.setBackgroundResource(R.drawable.hints);
+        }
+
 //        ((ViewHolder)viewHolder).letter.setText(hintTrack.getName().charAt(0));
     }
     @Override
