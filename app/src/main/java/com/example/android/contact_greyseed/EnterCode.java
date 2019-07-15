@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -27,6 +29,23 @@ public class EnterCode extends AppCompatActivity {
         setContentView(R.layout.activity_enter_code);
         ref = FirebaseDatabase.getInstance().getReference("Games");
         players = FirebaseDatabase.getInstance().getReference("Players");
+        EditText text = findViewById(R.id.codeEntered);
+        text.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length() == 5){
+                    editable.append(" ");
+                }
+            }
+        });
     }
 
     public void enter(View view) {

@@ -12,12 +12,11 @@
         android:id="@+id/text_message_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="2dp"
         android:text="John Doe"
         android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/text_message_body_recieved"
+        app:layout_constraintTop_toBottomOf="@+id/text_message_body_recieved" />
 
     <TextView
         android:id="@+id/text_message_body_recieved"
@@ -30,17 +29,18 @@
         android:padding="8dp"
         android:text="hi man, how are you?"
         android:textColor="#ffffff"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_message_name" />
+        app:layout_constraintStart_toEndOf="@+id/selected"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/text_message_time_recieved"
-        android:text="11:40"
+    <ImageView
+        android:id="@+id/selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="10sp"
-        app:layout_constraintLeft_toRightOf="@+id/text_message_body"
-        android:layout_marginLeft="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/text_message_body" />
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/selected" />
 
 </android.support.constraint.ConstraintLayout>

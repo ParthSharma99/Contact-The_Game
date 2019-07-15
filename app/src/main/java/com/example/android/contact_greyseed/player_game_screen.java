@@ -59,7 +59,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
     TextView wordArea,makeContactMsg;
     Button sendButton;
     EditText editText;
-    String msg,contactHintTrack = "";
+    String msg,contactHintTrack = "",leader = "";
 
 
     @Override
@@ -130,10 +130,24 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                 idx = database.size();
                 if(database.isEmpty())return;
                 for(i = 0;i<database.size();i++){
+
+                    if(i == 0){
+                        leader = database.get(i).get("sender");
+                    }
                     messages.add(new Message(database.get(i).get("msg"),database.get(i).get("sender")));
                 }
                 for(i = 1;i<messages.size();i++){
                     messagesAdapter.add(messages.get(i));
+                    if(messagesAdapter.get(i-1).getSender().equals(new playerName().getName())){
+                        messagesAdapter.get(i-1).side = 1;
+                    }else if(messagesAdapter.get(i-1).getSender().equals("UniversalMessageCop")){
+                        messagesAdapter.get(i-1).side = 3;
+                    }else if(messagesAdapter.get(i-1).getSender().equals(leader)){
+                        messagesAdapter.get(i-1).side = 4;
+                    }else{
+                        messagesAdapter.get(i-1).side = 2;
+
+                    }
                 }
                 adapter = new MessageAdapter(messagesAdapter,player_game_screen.this);
                 recyclerView.setAdapter(adapter);
@@ -145,6 +159,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
 
             }
         });
+
         hints.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -208,9 +223,8 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                 for(int j =1;j<dataSnapshot.getChildrenCount();j++) {
                     HashMap<String, String> data = (HashMap<String, String>) dataSnapshot.child(String.valueOf(j)).getValue();
                     if(data == null || data.isEmpty())return;
-                    Long cnt = dataSnapshot.child(String.valueOf(j)).getChildrenCount();
-                    hintTracks.get(j-1).count = cnt;
-                    Toast.makeText(player_game_screen.this, String.valueOf(cnt), Toast.LENGTH_SHORT).show();
+                    if(j-1 > hintTracks.size())return;
+                    hintTracks.get(j-1).count = dataSnapshot.child(String.valueOf(j)).getChildrenCount();
                     hintTrackContactData.add(data);
                     hintTrackAdapter = new HintTrackAdapter(hintTracks, player_game_screen.this);
                     hintTrackView.setAdapter(hintTrackAdapter);
@@ -276,7 +290,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
     }
 
     public void getHintContactWord(View view){
-        String temp = editText.getText().toString().trim();
+        String temp = editText.getText().toString().trim().toLowerCase();
         if(!checkMessage(temp)){
             Toast.makeText(this, "Check the Game word.", Toast.LENGTH_SHORT).show();
             return;
@@ -310,7 +324,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
 //                     Toast.makeText(player_game_screen.this, String.valueOf(s[0]), Toast.LENGTH_SHORT).show();
                         hints.child(String.valueOf(s[0])).setValue(hintMsgIndex);
 //                        contactWord.child(String.valueOf(s[0])).removeValue();
-                        contactWord.child(String.valueOf(hintTrackAdapter.getItemCount())).child(new playerName().getName()).setValue(word);
+                        contactWord.child(String.valueOf(s[0])).child(new playerName().getName()).setValue(word);
                     }
 
                     @Override
@@ -366,26 +380,20 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         cancelButton.setVisibility(View.VISIBLE);
         contactButton.setVisibility(View.VISIBLE);
         makeContactMsg.setVisibility(View.VISIBLE);
-//        recyclerView.findViewHolderForAdapterPosition(temp).itemView.animate().alpha(0.3f).setDuration(400);
-//        final Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                recyclerView.findViewHolderForAdapterPosition(temp).itemView.animate().alpha(1).setDuration(400);
-//            }
-//        }, 500);
 
     }
 
     public void makeContact(View view){
 
-        final String temp = editText.getText().toString().trim();
+        final String temp = editText.getText().toString().trim().toLowerCase();
         if(!checkMessage(temp)){
             Toast.makeText(this, "Check the Game word.", Toast.LENGTH_SHORT).show();
             return;
         }
         if(temp.equals("") || temp.contains(" "))return;
-        contactWord.child(String.valueOf(hintTrackSelectIdx)).child(new playerName().getName()).setValue(temp);
+        contactWord.child(String.valueOf(hintTrackSelectIdx+1)).child(new playerName().getName()).setValue(temp);
+        Message m = new Message("A contact has been initiated on hint-track #" +String.valueOf(hintTrackSelectIdx+1), "UniversalMessageCop");
+        reference.child(String.valueOf(messages.size())).setValue(m);
         editText.setText("");
         resetAdapter(view);
     }
@@ -395,11 +403,9 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         String t = word.toLowerCase();
         s = s.toLowerCase();
         if(s.length() < temp){
-            Toast.makeText(this, "Checked0", Toast.LENGTH_SHORT).show();
             return false;
         }
         if(t.substring(0,temp+1).equals(s.substring(0,temp+1))){
-            Toast.makeText(this, "Checked2", Toast.LENGTH_SHORT).show();
             return true;
         }
         return false;

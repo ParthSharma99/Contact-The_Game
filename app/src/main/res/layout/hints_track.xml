@@ -9,7 +9,7 @@
         android:id="@+id/hint_track_letter"
         android:layout_width="48sp"
         android:layout_height="48sp"
-        android:layout_marginStart="2dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="2dp"
         android:background="@drawable/hints"
         android:padding="6dp"
@@ -34,6 +34,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif"
         android:text="1"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

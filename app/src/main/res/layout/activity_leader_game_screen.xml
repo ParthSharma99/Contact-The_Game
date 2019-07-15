@@ -28,7 +28,6 @@
         android:letterSpacing="1"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:text="pot"
         android:textAlignment="center"
         android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
@@ -43,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="4dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="32dp"
         android:ems="10"
         android:hint="Type a hint"
         android:inputType="textPersonName"
@@ -58,7 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="9dp"
-        android:layout_marginBottom="2dp"
+        android:layout_marginBottom="32dp"
         android:onClick="send_msg"
         android:text="Send"
         android:visibility="visible"
@@ -174,10 +173,20 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="4dp"
+        android:onClick="setChallengeBtn"
         android:text="Challenge"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/button9_leader"
         app:layout_constraintEnd_toStartOf="@+id/cancelHintSelect" />
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="368dp"
+        android:layout_height="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+    </android.support.constraint.ConstraintLayout>
 
 
 </android.support.constraint.ConstraintLayout>

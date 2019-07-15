@@ -73,7 +73,7 @@ public class Lobby extends AppCompatActivity {
                     new playerName().setGameCode(name);
                     ref.child(name).setValue("Active");
                     chat.child(name).setValue(messages);
-//                    contactWord.child(name).setValue(mp);
+                    contactWord.child(name).child("0").child("YO").setValue("yo");
                     ArrayList<String> hintMsgIndex = new ArrayList<>();
                     hintMsgIndex.add("YO");
                     hintMsgIndex.add("0");
