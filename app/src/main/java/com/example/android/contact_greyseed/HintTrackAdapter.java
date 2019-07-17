@@ -33,7 +33,7 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         final HintTrack hintTrack = list.get(i);
-        ((ViewHolder)viewHolder).number.setText(String.valueOf(i+1));
+        ((ViewHolder)viewHolder).number.setText(String.valueOf(hintTrack.hintTrackNumber));
         ((ViewHolder)viewHolder).no_contacts.setText(String.valueOf(hintTrack.count));
 
 //        ((ViewHolder)viewHolder).letter.setText(String.valueOf(hintTrack.author.toUpperCase().charAt(0)));

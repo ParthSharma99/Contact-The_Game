@@ -22,12 +22,19 @@ public class MessageAdapter extends RecyclerView.Adapter {
     private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
     private static final int VIEW_TYPE_MESSAGE_UNIVERSAL = 3;
     private static final int VIEW_TYPE_MESSAGE_LEADER = 4;
+    public int state = 0;
     private ArrayList<Message> listItems = new ArrayList<>();
-    private Context context;
+    private OnMessageClickListener messageClickListener;
 
-    public MessageAdapter(ArrayList<Message> l, Context context) {
+    public MessageAdapter(ArrayList<Message> l, player_game_screen listener) {
         this.listItems = l;
-        this.context = context;
+        this.messageClickListener = listener;
+    }
+
+
+    public MessageAdapter(ArrayList<Message> l, leader_game_screen listener) {
+        this.listItems = l;
+        this.messageClickListener = listener;
     }
 
     @NonNull
@@ -38,13 +45,13 @@ public class MessageAdapter extends RecyclerView.Adapter {
         if(i == VIEW_TYPE_MESSAGE_RECEIVED){
             view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.recieved_messages,viewGroup,false);
-            return new ReceivedViewHolder(view);
+            return new ReceivedViewHolder(view,messageClickListener);
         }
 
         else if(i == VIEW_TYPE_MESSAGE_SENT){
             view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.sent_message,viewGroup,false);
-            return new SentViewHolder(view);
+            return new SentViewHolder(view,messageClickListener);
         }else if(i == VIEW_TYPE_MESSAGE_UNIVERSAL){
             view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.universal_message,viewGroup,false);
@@ -52,7 +59,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
         }else if(i == VIEW_TYPE_MESSAGE_LEADER){
             view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.recieved_leader_message,viewGroup,false);
-            return new ReceivedLeaderViewHolder(view);
+            return new ReceivedLeaderViewHolder(view,messageClickListener);
 
         }
         return null;
@@ -75,34 +82,55 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
                 ((ReceivedViewHolder)viewHolder).message.setText(msg.getMsg());
                 ((ReceivedViewHolder)viewHolder).player.setText(msg.getSender());
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        msg.toggleSelect();
-
-                        if(msg.isSelected() && ((ReceivedViewHolder) viewHolder).select.getVisibility()==View.GONE){
-                            ((ReceivedViewHolder) viewHolder).select.setVisibility(View.VISIBLE);
-                        }else{
-                            ((ReceivedViewHolder) viewHolder).select.setVisibility(View.GONE);
-                        }
+                if(state == 1){
+                    ((ReceivedViewHolder) viewHolder).unselect.setVisibility(View.VISIBLE);
+                    ((ReceivedViewHolder) viewHolder).select.setVisibility(View.INVISIBLE);
+                    if(msg.isSelected()){
+                        ((ReceivedViewHolder) viewHolder).select.setVisibility(View.VISIBLE);
                     }
-                });
+                }else{
+                    ((ReceivedViewHolder) viewHolder).unselect.setVisibility(View.GONE);
+                    ((ReceivedViewHolder) viewHolder).select.setVisibility(View.GONE);
+                }
+//                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        msg.toggleSelect();
+//
+//                        if(msg.isSelected() && ((ReceivedViewHolder) viewHolder).select.getVisibility()==View.GONE){
+//                            ((ReceivedViewHolder) viewHolder).select.setVisibility(View.VISIBLE);
+//                        }else{
+//                            ((ReceivedViewHolder) viewHolder).select.setVisibility(View.GONE);
+//                        }
+//                    }
+//                });
             }
             else if(viewHolder.getItemViewType() == VIEW_TYPE_MESSAGE_SENT){
                 ((SentViewHolder)viewHolder).message.setText(msg.getMsg());
                 ((SentViewHolder)viewHolder).player.setText(msg.getSender());
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        msg.toggleSelect();
-                        if(msg.isSelected() && ((SentViewHolder) viewHolder).select.getVisibility() == View.GONE){
-                            ((SentViewHolder) viewHolder).select.setVisibility(View.VISIBLE);
-                        }else{
-                            ((SentViewHolder) viewHolder).select.setVisibility(View.GONE);
-                        }
+                if(state == 1){
+                    ((SentViewHolder) viewHolder).unselect.setVisibility(View.VISIBLE);
+                    ((SentViewHolder) viewHolder).select.setVisibility(View.INVISIBLE);
+                    if(msg.isSelected()){
+                        ((SentViewHolder) viewHolder).select.setVisibility(View.VISIBLE);
                     }
-                });
+                }else{
+                    ((SentViewHolder) viewHolder).unselect.setVisibility(View.GONE);
+                    ((SentViewHolder) viewHolder).select.setVisibility(View.GONE);
+                }
+
+//                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//
+//                        msg.toggleSelect();
+//                        if(msg.isSelected() && ((SentViewHolder) viewHolder).select.getVisibility() == View.GONE){
+//                            ((SentViewHolder) viewHolder).select.setVisibility(View.VISIBLE);
+//                        }else{
+//                            ((SentViewHolder) viewHolder).select.setVisibility(View.GONE);
+//                        }
+//                    }
+//                });
             }
             else if(viewHolder.getItemViewType() == VIEW_TYPE_MESSAGE_UNIVERSAL){
                 ((UniversalViewHolder)viewHolder).message.setText(msg.getMsg());
@@ -112,18 +140,29 @@ public class MessageAdapter extends RecyclerView.Adapter {
                     String temp = msg.getSender();
                     temp = temp + " (leader)";
                     ((ReceivedLeaderViewHolder)viewHolder).player.setText(temp);
-                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            msg.toggleSelect();
+                if(state == 1){
+                    ((ReceivedLeaderViewHolder) viewHolder).unselect.setVisibility(View.VISIBLE);
+                    ((ReceivedLeaderViewHolder) viewHolder).select.setVisibility(View.INVISIBLE);
+                    if(msg.isSelected()){
+                        ((ReceivedLeaderViewHolder) viewHolder).select.setVisibility(View.VISIBLE);
+                    }
+                }else{
+                    ((ReceivedLeaderViewHolder) viewHolder).unselect.setVisibility(View.GONE);
+                    ((ReceivedLeaderViewHolder) viewHolder).select.setVisibility(View.GONE);
+                }
 
-                            if(msg.isSelected() && ((ReceivedLeaderViewHolder) viewHolder).select.getVisibility()==View.GONE){
-                                ((ReceivedLeaderViewHolder) viewHolder).select.setVisibility(View.VISIBLE);
-                            }else{
-                                ((ReceivedLeaderViewHolder) viewHolder).select.setVisibility(View.GONE);
-                            }
-                        }
-                    });
+//                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//                            msg.toggleSelect();
+//
+//                            if(msg.isSelected() && ((ReceivedLeaderViewHolder) viewHolder).select.getVisibility()==View.GONE){
+//                                ((ReceivedLeaderViewHolder) viewHolder).select.setVisibility(View.VISIBLE);
+//                            }else{
+//                                ((ReceivedLeaderViewHolder) viewHolder).select.setVisibility(View.GONE);
+//                            }
+//                        }
+//                    });
 
             }
     }
@@ -146,44 +185,106 @@ public class MessageAdapter extends RecyclerView.Adapter {
     }
 
 
-    public class SentViewHolder extends RecyclerView.ViewHolder{
+    public class SentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener{
 
         public TextView message;
         public TextView player;
-        public ImageView select;
-        SentViewHolder(@NonNull View itemView) {
+        public ImageView select,unselect;
+        OnMessageClickListener clickListener;
+        SentViewHolder(@NonNull View itemView, OnMessageClickListener listener) {
             super(itemView);
             message = itemView.findViewById(R.id.text_message_body);
             player = itemView.findViewById(R.id.text_message_player);
             select = itemView.findViewById(R.id.selected);
+            unselect = itemView.findViewById(R.id.unselected);
+            this.clickListener = listener;
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+        }
+        @Override
+        public void onClick(View view) {
+            if(state == 1){
+                clickListener.onMessageClick(getAdapterPosition());
+            }
         }
 
-
+        @Override
+        public boolean onLongClick(View view) {
+            if(state == 0) {
+                state = 1;
+                clickListener.onMessageClick(getAdapterPosition());
+                return true;
+            }
+            return false;
+        }
     }
 
-    public class ReceivedViewHolder extends RecyclerView.ViewHolder{
+    public class ReceivedViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener{
 
         public TextView message;
         public TextView player;
-        public ImageView select;
-        ReceivedViewHolder(@NonNull View itemView) {
+        public ImageView select,unselect;
+        OnMessageClickListener clickListener;
+        ReceivedViewHolder(@NonNull View itemView, OnMessageClickListener listener) {
             super(itemView);
             message = itemView.findViewById(R.id.text_message_body_recieved);
             player = itemView.findViewById(R.id.text_message_name);
             select = itemView.findViewById(R.id.selected);
+            unselect = itemView.findViewById(R.id.unselected);
+            this.clickListener = listener;
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+        }
+        @Override
+        public void onClick(View view) {
+            if(state == 1){
+                clickListener.onMessageClick(getAdapterPosition());
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            if(state == 0) {
+                state = 1;
+                clickListener.onMessageClick(getAdapterPosition());
+                return true;
+            }
+            return false;
         }
     }
 
-    public class ReceivedLeaderViewHolder extends RecyclerView.ViewHolder{
+    public class ReceivedLeaderViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
 
         public TextView message;
         public TextView player;
-        public ImageView select;
-        ReceivedLeaderViewHolder(@NonNull View itemView) {
+        public ImageView select,unselect;
+        OnMessageClickListener clickListener;
+
+        ReceivedLeaderViewHolder(@NonNull View itemView, OnMessageClickListener listener) {
             super(itemView);
             message = itemView.findViewById(R.id.text_message_body_recieved);
             player = itemView.findViewById(R.id.text_message_name);
             select = itemView.findViewById(R.id.selected);
+            unselect = itemView.findViewById(R.id.unselected);
+            this.clickListener = listener;
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+        }
+        @Override
+        public void onClick(View view) {
+            if(state == 1){
+                clickListener.onMessageClick(getAdapterPosition());
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            if(state == 0) {
+                state = 1;
+                clickListener.onMessageClick(getAdapterPosition());
+                return true;
+            }
+            return false;
         }
     }
 
@@ -194,6 +295,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
             super(itemView);
             message = itemView.findViewById(R.id.text_message_body_universal);
         }
+    }
+
+    public interface OnMessageClickListener{
+        void onMessageClick(int pos);
     }
 
 }

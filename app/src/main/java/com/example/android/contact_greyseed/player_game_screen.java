@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-public class player_game_screen extends AppCompatActivity implements HintTrackAdapter.OnHintClickListener{
+public class player_game_screen extends AppCompatActivity implements HintTrackAdapter.OnHintClickListener,MessageAdapter.OnMessageClickListener{
 
     private DatabaseReference reference,hints,gameWord,contactWord,players,games;
     private static RecyclerView recyclerView;
@@ -51,13 +51,13 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
     private ArrayList<Message> messages,messagesAdapter;
     private static ArrayList<HintTrack> hintTracks,hintAdapter;
     private String gameCode,word,progress,ccw = "";
-    private int idx = 1,i=0,temp,hintTrackSelectIdx = 0;
-    private ImageButton cancelButton,addButton,contactButton,contactWordSend,cancelContactBtn,contactWordSendBtn;
+    private int idx = 1,i=0,temp,hintTrackSelectIdx = 0, messagesSelected = 0;
+    private ImageButton cancelButton,contactButton,contactWordSend,cancelContactBtn,contactWordSendBtn;
     private ArrayList<HashMap<String,String>> database;
     private ArrayList<String> playerNames;
     ArrayList<HashMap<String, String>> hintTrackContactData;
-    TextView wordArea,makeContactMsg;
-    Button sendButton;
+    TextView wordArea,playerScore;
+    Button sendButton,addButton,deleteTrackBtn;
     EditText editText;
     String msg,contactHintTrack = "",leader = "";
 
@@ -76,13 +76,14 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
 
         cancelContactBtn = findViewById(R.id.cancelContact);
         contactWordSendBtn = findViewById(R.id.contactBtn);
+        deleteTrackBtn = findViewById(R.id.deleteTrack);
         cancelButton = findViewById(R.id.imageCancel);
         sendButton = findViewById(R.id.button9);
-        addButton = findViewById(R.id.imageAdd);
+        addButton = findViewById(R.id.addHints);
         contactButton = findViewById(R.id.imageContact);
         contactWordSend = findViewById(R.id.contactBtn);
-        makeContactMsg = findViewById(R.id.makeContactMsg);
         editText = findViewById(R.id.hint_message);
+        playerScore = findViewById(R.id.player_score);
 
         hintTrackView.setHasFixedSize(true);
         hintTrackView.setLayoutManager(new LinearLayoutManager(this,LinearLayout.HORIZONTAL,false));
@@ -114,7 +115,6 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         hintTrackAdapter = new HintTrackAdapter(hintTracks, this);
         hintTrackView.setAdapter(hintTrackAdapter);
     }
-
 
     @Override
     protected void onStart() {
@@ -171,6 +171,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                 for(int i=1;i<dataSnapshot.getChildrenCount();i++){
                     ArrayList<Message> msg_db = new ArrayList<>();
                     ArrayList<Integer> idx_db = new ArrayList<>();
+                    if( !dataSnapshot.hasChild(String.valueOf(i)) ) return;
                     temp = (ArrayList<String>) Objects.requireNonNull(dataSnapshot).child(String.valueOf(i)).getValue();
                     if(temp.isEmpty())return;
                     if(temp.size()>0){
@@ -182,7 +183,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                         }
 
 //                        Toast.makeText(player_game_screen.this, idx_db.toString(), Toast.LENGTH_SHORT).show();
-                        hintTracks.add(new HintTrack(idx_db,msg_db,temp.get(0)));
+                        hintTracks.add(new HintTrack(idx_db,msg_db,temp.get(0),i));
                         hintTrackAdapter.notifyDataSetChanged();
                         hintTrackView.smoothScrollToPosition(hintTrackAdapter.getItemCount());
 //                        if(i>0){
@@ -207,7 +208,11 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                     word = dt.get("Word");
                     progress = dt.get("Progress");
                     word = word.toUpperCase();
-
+                    String score = dt.get("Leader");
+                    int s = 5 - Integer.valueOf(score);
+                    String temp = "";
+                    for(int i=0;i<s;i++){temp +=" & ";}
+                    playerScore.setText(temp);
                     wordArea.setText(word.substring(0,Integer.parseInt(progress)+1));
                 }
             }
@@ -263,6 +268,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
 
             }
         });
+
     }
 
     public void send_msg(View view){
@@ -345,43 +351,106 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
     }
 
     public void addHints(View view){
-
+        addButton.setVisibility(View.GONE);
+        editText.setVisibility(View.VISIBLE);
         sendButton.setVisibility(View.INVISIBLE);
+        hintTrackView.setVisibility(View.VISIBLE);
         contactWordSendBtn.setVisibility(View.VISIBLE);
         cancelContactBtn.setVisibility(View.VISIBLE);
         editText.setText("");
         editText.setHint("Enter your contact word..");
-
+        adapter.state =0;
+        adapter.notifyDataSetChanged();
     }
 
     public void resetAdapter(View view){
         recyclerView.setAdapter(adapter);
         hintTrackView.setVisibility(View.VISIBLE);
-        addButton.setVisibility(View.VISIBLE);
         cancelButton.setVisibility(View.GONE);
         contactButton.setVisibility(View.GONE);
-        makeContactMsg.setVisibility(View.GONE);
+        cancelContactBtn.setVisibility(View.GONE);
+        deleteTrackBtn.setVisibility(View.GONE);
+        contactButton.setVisibility(View.GONE);
+        sendButton.setVisibility(View.VISIBLE);
+        contactWordSendBtn.setVisibility(View.GONE);
+        cancelContactBtn.setVisibility(View.GONE);
+        editText.setVisibility(View.VISIBLE);
         editText.setText("");
         editText.setHint("Type a hint..");
-
+        for(int i=0;i<messagesAdapter.size();i++){
+            if(messagesAdapter.get(i).isSelected()){
+                messagesAdapter.get(i).toggleSelect();
+            }
+        }
     }
 
     @Override
     public void onClick(int pos) {
-        editText.setText("");
-        editText.setHint("Enter your Contact word...");
         HintTrack ht = hintTracks.get(pos);
         hintTrackSelectIdx = pos;
-        MessageAdapter tempHintAdapter = new MessageAdapter(ht.track,player_game_screen.this);
-        recyclerView.setAdapter(tempHintAdapter);
-        addButton.setVisibility(View.GONE);
-        hintTrackView.setVisibility(View.GONE);
+        if(ht.author.equals(new playerName().getName())){
+            sendButton.setVisibility(View.INVISIBLE);
+            editText.setVisibility(View.INVISIBLE);
+            deleteTrackBtn.setVisibility(View.VISIBLE);
+            cancelButton.setVisibility(View.VISIBLE);
+        }else {
+            editText.setText("");
+            editText.setHint("Enter your Contact word...");
+            sendButton.setVisibility(View.INVISIBLE);
+            deleteTrackBtn.setVisibility(View.GONE);
+            cancelButton.setVisibility(View.VISIBLE);
+            contactButton.setVisibility(View.VISIBLE);
 
-        cancelButton.setVisibility(View.VISIBLE);
-        contactButton.setVisibility(View.VISIBLE);
-        makeContactMsg.setVisibility(View.VISIBLE);
+            MessageAdapter tempHintAdapter = new MessageAdapter(ht.track, player_game_screen.this);
+            recyclerView.setAdapter(tempHintAdapter);
+            addButton.setVisibility(View.GONE);
+        }
 
+//        hintTrackView.setVisibility(View.GONE);
     }
+
+
+    @Override
+    public void onMessageClick(int pos) {
+
+        if(pos>=0 && pos < messagesAdapter.size()){
+            messagesAdapter.get(pos).toggleSelect();
+            if(messagesAdapter.get(pos).isSelected()){
+                messagesSelected++;
+            }else{
+                messagesSelected--;
+            }
+            if(messagesSelected > 0){
+                adapter.state = 1;
+                addButton.setVisibility(View.VISIBLE);
+                sendButton.setVisibility(View.INVISIBLE);
+                editText.setVisibility(View.INVISIBLE);
+                hintTrackView.setVisibility(View.INVISIBLE);
+            }else{
+                adapter.state = 0;
+                addButton.setVisibility(View.GONE);
+                sendButton.setVisibility(View.VISIBLE);
+                editText.setVisibility(View.VISIBLE);
+                hintTrackView.setVisibility(View.VISIBLE);
+            }
+        }
+        boolean ch = false;
+        for(int i=0;i<messagesAdapter.size();i++){
+            if(messagesAdapter.get(i).isSelected()){
+                ch = true;
+            }
+        }
+        if(!ch){
+            adapter.state = 0;
+            addButton.setVisibility(View.GONE);
+            sendButton.setVisibility(View.VISIBLE);
+            editText.setVisibility(View.VISIBLE);
+            hintTrackView.setVisibility(View.VISIBLE);
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+
 
     public void makeContact(View view){
 

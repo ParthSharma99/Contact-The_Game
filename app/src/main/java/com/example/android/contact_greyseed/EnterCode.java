@@ -44,17 +44,19 @@ public class EnterCode extends AppCompatActivity {
                 if(editable.length() == 5){
                     editable.append(" ");
                 }
+
             }
         });
     }
 
     public void enter(View view) {
         final EditText text = findViewById(R.id.codeEntered);
+        final String txt = text.getText().toString().toUpperCase();
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 //                Toast.makeText(EnterCode.this, dataSnapshot.getValue().toString(), Toast.LENGTH_SHORT).show();
-                if (dataSnapshot.hasChild(text.getText().toString().toUpperCase())) {
+                if (dataSnapshot.hasChild(txt.toUpperCase())) {
                     enter = true;
                 }
                 if(enter){
@@ -63,10 +65,10 @@ public class EnterCode extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 //                            Toast.makeText(EnterCode.this, dataSnapshot.child(text.getText().toString()).getValue().toString(), Toast.LENGTH_SHORT).show();
-                            while(dataSnapshot.child(text.getText().toString().toUpperCase()).getValue() == null){
+                            while(dataSnapshot.child(txt.toUpperCase()).getValue() == null){
 
                             }
-                            playerNames =(ArrayList<String>) dataSnapshot.child(text.getText().toString()).getValue();
+                            playerNames =(ArrayList<String>) dataSnapshot.child(txt).getValue();
                             if(!playerNames.contains(new playerName().getName()))
                                 playerNames.add(new playerName().getName());
 //                            Toast.makeText(EnterCode.this, playerNames.toString(), Toast.LENGTH_SHORT).show();

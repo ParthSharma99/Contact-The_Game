@@ -23,11 +23,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
 
-public class leader_game_screen extends AppCompatActivity implements HintTrackAdapter.OnHintClickListener{
+public class leader_game_screen extends AppCompatActivity implements HintTrackAdapter.OnHintClickListener,MessageAdapter.OnMessageClickListener{
 
     private DatabaseReference reference,hints,gameWord,contactWord,players,games;
     private static RecyclerView recyclerView;
@@ -37,14 +38,15 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
     private ArrayList<Message> messages,messagesAdapter;
     private static ArrayList<HintTrack> hintTracks,hintAdapter;
     private String gameCode,word,progress;
-    private int idx = 1,i=0,temp,hintTrackSelectIdx = 0,guessTime = 0,gameWordIdx = 0;
+    private int idx = 1,i=0,temp,hintTrackSelectIdx = 0,guessTime = 0,messagesSelected = 0;
     private ImageButton cancelButton,cancelGuess,sendGuess;
     private ArrayList<HashMap<String,String>> database;
     ArrayList<HashMap<String,String>> hintTrackContactData;
-    TextView wordArea,makeContactMsg;
+    TextView wordArea,leaderScore;
     Button sendButton,guessBtn,challengeBtn;
     EditText editText;
     String msg;
+    int currentScore = 0;
     boolean challenge = false;
 
     @Override
@@ -63,8 +65,8 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         sendButton = findViewById(R.id.button9_leader);
         guessBtn = findViewById(R.id.guessContact);
         challengeBtn = findViewById(R.id.challengeBtn);
-        makeContactMsg = findViewById(R.id.makeContactMsg_leader);
         editText = findViewById(R.id.hint_message_leader);
+        leaderScore = findViewById(R.id.leaderScore);
         cancelButton = findViewById(R.id.cancelHintSelect);
         cancelGuess = findViewById(R.id.cancelGuess);
         sendGuess = findViewById(R.id.sendGuess);
@@ -149,6 +151,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
                 for(int i=1;i<dataSnapshot.getChildrenCount();i++){
                     ArrayList<Message> msg_db = new ArrayList<>();
                     ArrayList<Integer> idx_db = new ArrayList<>();
+                    if( !dataSnapshot.hasChild(String.valueOf(i)) ) return;
                     temp = (ArrayList<String>) Objects.requireNonNull(dataSnapshot).child(String.valueOf(i)).getValue();
                     assert temp != null;
                     if(temp.size()>0){
@@ -159,16 +162,17 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
                             idx_db.add(t);
                         }
 
-//                        Toast.makeText(player_game_screen.this, idx_db.toString(), Toast.LENGTH_SHORT).show();
-                        hintTracks.add(new HintTrack(idx_db,msg_db,temp.get(0)));
+                        hintTracks.add(new HintTrack(idx_db, msg_db, temp.get(0), i));
+                        hintTracks.sort(new Comparator<HintTrack>() {
+                            @Override
+                            public int compare(HintTrack hintTrack, HintTrack t1) {
+                                return 0;
+                            }
+                        });
                         hintTrackAdapter.notifyDataSetChanged();
                         hintTrackView.smoothScrollToPosition(hintTrackAdapter.getItemCount());
-//                        if(i>0 && i<hintTracks.size()){
-//                            hintAdapter.add(hintTracks.get(i));
-//                            hintTrackAdapter.notifyDataSetChanged();
-//                            hintTrackView.smoothScrollToPosition(hintTrackAdapter.getItemCount());
-//                        }
                     }
+
                 }
             }
 
@@ -187,6 +191,12 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
                     word = word.toUpperCase();
                     String source = "<b>" + word.substring(0,Integer.parseInt(progress)+1) + "</b>" + word.substring(Integer.parseInt(progress)+1);
                     wordArea.setText(Html.fromHtml(source,Html.FROM_HTML_SEPARATOR_LINE_BREAK_BLOCKQUOTE));
+
+                    String score = dt.get("Leader");
+                    currentScore = Integer.valueOf(score);
+                    String temp = "";
+                    for(int i=0;i<currentScore;i++){temp = temp + " $ ";}
+                    leaderScore.setText(temp);
                 }
             }
 
@@ -261,7 +271,6 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
             messages.add(new Message(msg,new playerName().getName()));
             editText.setText(" ");
             reference.setValue(messages);
-//            idx++;
         }
 
         editText.setHint("Type a hint..");
@@ -279,9 +288,50 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         MessageAdapter tempHintAdapter = new MessageAdapter(ht.track,leader_game_screen.this);
         recyclerView.setAdapter(tempHintAdapter);
 //        hintTrackView.setVisibility(View.GONE);
+        editText.setVisibility(View.GONE);
+        sendButton.setVisibility(View.INVISIBLE);
         guessBtn.setVisibility(View.VISIBLE);
+        if(hintTracks.get(hintTrackSelectIdx).count >=2){
+            challengeBtn.setVisibility(View.VISIBLE);
+        }
         cancelButton.setVisibility(View.VISIBLE);
-        makeContactMsg.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onMessageClick(int pos) {
+
+        if(pos>=0 && pos < messagesAdapter.size()){
+            messagesAdapter.get(pos).toggleSelect();
+            if(messagesAdapter.get(pos).isSelected()){
+                messagesSelected++;
+            }else{
+                messagesSelected--;
+            }
+            if(messagesSelected > 0){
+                adapter.state = 1;
+                sendButton.setVisibility(View.INVISIBLE);
+                editText.setVisibility(View.INVISIBLE);
+                hintTrackView.setVisibility(View.INVISIBLE);
+            }else{
+                adapter.state = 0;
+                sendButton.setVisibility(View.VISIBLE);
+                editText.setVisibility(View.VISIBLE);
+                hintTrackView.setVisibility(View.VISIBLE);
+            }
+        }
+        boolean ch = false;
+        for(int i=0;i<messagesAdapter.size();i++){
+            if(messagesAdapter.get(i).isSelected()){
+                ch = true;
+            }
+        }
+        if(!ch){
+            adapter.state = 0;
+            sendButton.setVisibility(View.VISIBLE);
+            editText.setVisibility(View.VISIBLE);
+            hintTrackView.setVisibility(View.VISIBLE);
+        }
+        adapter.notifyDataSetChanged();
     }
 
     public void cancel(View view){
@@ -292,23 +342,26 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         guessBtn.setVisibility(View.GONE);
         cancelButton.setVisibility(View.GONE);
         challengeBtn.setVisibility(View.GONE);
+        editText.setVisibility(View.VISIBLE);
         editText.setText("");
         editText.setHint("Type a hint..");
     }
 
     public void guess(View view){
-
+        editText.setVisibility(View.VISIBLE);
         editText.setText("");
         editText.setHint("Enter guess word..");
         sendButton.setVisibility(View.INVISIBLE);
         cancelGuess.setVisibility(View.VISIBLE);
         sendGuess.setVisibility(View.VISIBLE);
-        challengeBtn.setVisibility(View.VISIBLE);
+        guessBtn.setVisibility(View.GONE);
+        challengeBtn.setVisibility(View.GONE);
         cancelButton.setVisibility(View.GONE);
 
     }
 
     public void setCancelGuess(View view){
+        editText.setVisibility(View.VISIBLE);
         editText.setText("");
         editText.setHint("Type a hint..");
         sendButton.setVisibility(View.VISIBLE);
@@ -321,50 +374,6 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
     }
 
     public void setSendGuess(View view){
-
-        if(challenge){
-
-            String author = hintTracks.get(hintTrackSelectIdx).author;
-
-            String authorWord = "";
-
-            if(hintTrackContactData.get(hintTrackSelectIdx).containsKey(author)){
-                authorWord = hintTrackContactData.get(hintTrackSelectIdx).get(author);
-            }else{
-                return;
-            }
-            authorWord = authorWord.toLowerCase();
-            boolean found = false;
-            for(String s :hintTrackContactData.get(hintTrackSelectIdx).keySet()){
-                if(s.equals(author))continue;
-                String t = hintTrackContactData.get(hintTrackSelectIdx).get(s);
-                if(t.toLowerCase().equals(authorWord)){
-                    guessTime = 0;
-                    found =true;
-                    int temp = Integer.valueOf(progress);
-                    progress = String.valueOf(temp+1);
-                    gameWord.child("Progress").setValue(progress);
-                    for(int i = messagesAdapter.size();i>0;i--){
-                        reference.child(String.valueOf(i)).removeValue();
-                    }
-                    for(int i = hintTracks.size();i>0;i--){
-                        hints.child(String.valueOf(i)).removeValue();
-                        contactWord.child(String.valueOf(i)).removeValue();
-                    }
-                    setCancelGuess(view);
-                    Message m1 = new Message("Leader challenged hint-track#" + String.valueOf(hintTrackSelectIdx+1),"UniversalMessageCop");
-                    Message m2 = new Message("Contact successful for keyword : " + authorWord.toUpperCase(),"UniversalMessageCop");
-                    reference.child("1").setValue(m1);
-                    reference.child("2").setValue(m2);
-                }
-            }
-            if(!found) {
-                Message m = new Message("No valid Contact.", "UniversalMessageCop");
-                reference.child(String.valueOf(messages.size())).setValue(m);
-            }
-            challenge = false;
-            return;
-        }
 
         if(guessTime == 2){
             guessTime = 0;
@@ -379,7 +388,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
                 contactWord.child(String.valueOf(i)).removeValue();
             }
             setCancelGuess(view);
-            Message m = new Message(new playerName().getName() + " " + "could not guess the word.","UniversalMessageCop");
+            Message m = new Message("Leader could not guess the word.","UniversalMessageCop");
             reference.child("1").setValue(m);
             return;
 
@@ -409,15 +418,16 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
                 return;
             }
             authorWord = authorWord.toLowerCase();
-            Toast.makeText(this, author, Toast.LENGTH_SHORT).show();
             if(temp.equals(authorWord)){
                 Toast.makeText(this, "You Guessed it!", Toast.LENGTH_SHORT).show();
                 Message m = new Message("Leader guessed correctly for hint-track#" + String.valueOf(hintTrackSelectIdx+1) , "UniversalMessageCop");
                 reference.child(String.valueOf(messages.size())).setValue(m);
                 setCancelGuess(view);
+                gameWord.child("Leader").setValue(String.valueOf(currentScore+1));
+
             }else{
                 Toast.makeText(this, "Sorry", Toast.LENGTH_SHORT).show();
-                Message m = new Message("Leader guessed correctly for hint-track#" + String.valueOf(hintTrackSelectIdx+1) , "UniversalMessageCop");
+                Message m = new Message("Leader guessed incorrectly for hint-track#" + String.valueOf(hintTrackSelectIdx+1) , "UniversalMessageCop");
                 reference.child(String.valueOf(messages.size())).setValue(m);
                 guessTime++;
             }
@@ -429,12 +439,53 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
             Toast.makeText(this, "Hint track has no contact.", Toast.LENGTH_SHORT).show();
             return;
         }
-        editText.setText("");
-        editText.setHint("Are you sure ?");
-        challenge = true;
-        Message m = new Message("Leader challenged hint-track#" + String.valueOf(hintTrackSelectIdx+1) , "UniversalMessageCop");
-        reference.child(String.valueOf(messages.size())).setValue(m);
+//        editText.setText("");
+//        editText.setHint("Are you sure ?");
+        String author = hintTracks.get(hintTrackSelectIdx).author;
 
+        String authorWord = "";
+
+        if(hintTrackContactData.get(hintTrackSelectIdx).containsKey(author)){
+            authorWord = hintTrackContactData.get(hintTrackSelectIdx).get(author);
+        }else{
+            return;
+        }
+        authorWord = authorWord.toLowerCase();
+        boolean found = false;
+        for(String s :hintTrackContactData.get(hintTrackSelectIdx).keySet()){
+            if(s.equals(author))continue;
+            String t = hintTrackContactData.get(hintTrackSelectIdx).get(s);
+            if(t.toLowerCase().equals(authorWord)){
+                guessTime = 0;
+                found =true;
+                int temp = Integer.valueOf(progress);
+                progress = String.valueOf(temp+1);
+                gameWord.child("Progress").setValue(progress);
+                for(int i = messagesAdapter.size();i>0;i--){
+                    reference.child(String.valueOf(i)).removeValue();
+                }
+                for(int i = hintTracks.size();i>0;i--){
+                    hints.child(String.valueOf(i)).removeValue();
+                    contactWord.child(String.valueOf(i)).removeValue();
+                }
+                setCancelGuess(view);
+                Message m1 = new Message("Leader challenged hint-track#" + String.valueOf(hintTrackSelectIdx+1),"UniversalMessageCop");
+                Message m2 = new Message("Contact successful for keyword : " + authorWord.toUpperCase(),"UniversalMessageCop");
+                reference.child("1").setValue(m1);
+                reference.child("2").setValue(m2);
+                gameWord.child("Leader").setValue(String.valueOf(currentScore+1));
+
+            }
+        }
+        if(!found) {
+            Message m1 = new Message("Leader challenged hint-track#" + String.valueOf(hintTrackSelectIdx+1) , "UniversalMessageCop");
+            reference.child(String.valueOf(messages.size())).setValue(m1);
+            Message m = new Message("Challenge successful, Contact failed.", "UniversalMessageCop");
+            reference.child(String.valueOf(messages.size())).setValue(m);
+            gameWord.child("Leader").setValue(String.valueOf(currentScore+1));
+//                hints.child(String.valueOf(hintTrackSelectIdx+1)).removeValue();
+//                contactWord.child(String.valueOf(hintTrackSelectIdx+1)).removeValue();
+        }
     }
 
     private boolean checkMessage(String s){
@@ -453,5 +504,6 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
     public void leave(View view){
         games.setValue("End");
     }
+
 
 }

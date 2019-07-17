@@ -41,6 +41,7 @@ public class EnterContactWord extends AppCompatActivity {
         }
         gameWord.child(new playerName().getGameCode()).child("Word").setValue(s);
         gameWord.child(new playerName().getGameCode()).child("Progress").setValue("0");
+        gameWord.child(new playerName().getGameCode()).child("Leader").setValue("0");
         ref.child(new playerName().getGameCode()).setValue("Begun");
         Intent intent = new Intent(EnterContactWord.this,leader_game_screen.class);
         startActivity(intent);
