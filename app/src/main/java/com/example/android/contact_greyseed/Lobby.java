@@ -19,8 +19,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 
@@ -28,7 +31,7 @@ public class Lobby extends AppCompatActivity {
     static DatabaseReference ref,players,chat,contactWord,hints;
     static ArrayList<String> gameCodeName,playerNames;
     ArrayList<Message> messages;
-    int max = 3;
+    int mx = 4,n1=0,n2=0;
     private TextView gameCode;
     static String name = "";
      ListView playerList;
@@ -50,7 +53,7 @@ public class Lobby extends AppCompatActivity {
         playerList = findViewById(R.id.playerList);
         gameCode = findViewById(R.id.gameCode);
         messages = new ArrayList<>();
-        messages.add(new Message("0",new playerName().getName()));
+        messages.add(new Message("0",new playerName().getName(),new SimpleDateFormat("ddMMyyyyhhmmss",Locale.ENGLISH).format(new Date())));
 
         gameCodeName = new ArrayList<String>();
         playerNames = new ArrayList<String>();
@@ -59,33 +62,37 @@ public class Lobby extends AppCompatActivity {
         gameCodeName.add("MONTE");
         gameCodeName.add("CHASE");
 
-        name = gameCodeName.get(new Random().nextInt(max)) + " " + gameCodeName.get(new Random().nextInt(max));
+//        name = gameCodeName.get(n1) + " " + gameCodeName.get(n2);
         adapter = new ArrayAdapter<>(Lobby.this,android.R.layout.simple_list_item_1,playerNames);
         playerList.setAdapter(adapter);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.hasChild(name)){
-                    while(dataSnapshot.hasChild(name) && dataSnapshot.child(name).getValue(String.class).equals("Begun"))
-                    name = gameCodeName.get(new Random().nextInt(max)) + " " + gameCodeName.get(new Random().nextInt(max)) ;
-                }else{
+                    boolean found = false;
+                    for(n1=0;n1<mx;n1++){
+                        for(n2=0;n2<mx;n2++){
+                            name = gameCodeName.get(n1) + " " + gameCodeName.get(n2) ;
+                            if(!dataSnapshot.hasChild(name)){
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(found)
+                            {break;}
+                    }
+                    if(!found)return;
                     gameCode.setText(name);
                     new playerName().setGameCode(name);
                     ref.child(name).setValue("Active");
                     chat.child(name).setValue(messages);
-                    contactWord.child(name).child("0").child("YO").setValue("yo");
-                    ArrayList<String> hintMsgIndex = new ArrayList<>();
-                    hintMsgIndex.add("YO");
-                    hintMsgIndex.add("0");
-                    hintMsgIndex.add("0");
-                    hintMsgIndex.add("0");
-                    hints.child(name).child("0").setValue(hintMsgIndex);
+                    contactWord.child(name).child("NotThis").child("YO").setValue("yo");
+                    hints.child(name).child("NotThis").setValue(0);
                     playerNames.add(new playerName().getName());
                     adapter.notifyDataSetChanged();
                     players.child(name).setValue(playerNames);
                     check();
                 }
-            }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError)

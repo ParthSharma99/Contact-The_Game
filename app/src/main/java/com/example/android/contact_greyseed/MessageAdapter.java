@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
     private static final int VIEW_TYPE_MESSAGE_UNIVERSAL = 3;
     private static final int VIEW_TYPE_MESSAGE_LEADER = 4;
     public int state = 0;
+    public String timeStamp;
     private ArrayList<Message> listItems = new ArrayList<>();
     private OnMessageClickListener messageClickListener;
 

@@ -1,28 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:animateLayoutChanges="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".player_game_screen">
 
-    <Button
-        android:id="@+id/button8"
-        android:layout_width="56dp"
-        android:layout_height="37dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginEnd="7dp"
-        android:onClick="leave"
-        android:text="X"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/wordArea"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="31dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="5dp"
         android:background="@drawable/border"
         android:letterSpacing="1"
@@ -33,7 +23,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button8" />
+        app:layout_constraintTop_toBottomOf="@+id/imageButton2" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/message_box"
@@ -125,7 +115,7 @@
             android:id="@+id/hint_message"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="24dp"
             android:background="@null"
             android:ems="10"
             android:hint="Type a hint"
@@ -133,7 +123,6 @@
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/button9"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
@@ -160,6 +149,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:onClick="deleteHintTrack"
             android:text="Delete"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -167,67 +157,86 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <ImageButton
             android:id="@+id/button9"
-            style="@android:style/Widget.Material.Button.Colored"
+            style="@style/Widget.AppCompat.ImageButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
             android:onClick="send_msg"
-            android:text="Send"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.363" />
+            app:srcCompat="@drawable/send" />
+
+        <Button
+            android:id="@+id/breakContact"
+            style="@android:style/Widget.Material.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="breakContact"
+            android:text=" Break  Contact"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.553"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/imageContact"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginEnd="4dp"
+            android:layout_width="38dp"
+            android:layout_height="41dp"
             android:onClick="makeContact"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
             app:layout_constraintEnd_toStartOf="@+id/imageCancel"
             app:layout_constraintTop_toTopOf="@+id/layout_message_send"
             app:layout_constraintVertical_bias="0.482"
-            app:srcCompat="@android:drawable/checkbox_on_background" />
+            app:srcCompat="@drawable/confirm" />
 
         <ImageButton
             android:id="@+id/imageCancel"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginEnd="4dp"
+            android:layout_width="38dp"
+            android:layout_height="41dp"
             android:onClick="resetAdapter"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
             app:layout_constraintEnd_toEndOf="@+id/layout_message_send"
             app:layout_constraintTop_toTopOf="@+id/layout_message_send"
             app:layout_constraintVertical_bias="0.482"
-            app:srcCompat="@android:drawable/btn_dialog" />
+            app:srcCompat="@drawable/deny" />
 
         <ImageButton
             android:id="@+id/cancelContact"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_width="40dp"
+            android:layout_height="38dp"
             android:onClick="resetAdapter"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
             app:layout_constraintEnd_toEndOf="@+id/layout_message_send"
             app:layout_constraintTop_toTopOf="@+id/layout_message_send"
-            app:srcCompat="@android:drawable/btn_dialog" />
+            app:srcCompat="@drawable/deny" />
 
         <ImageButton
             android:id="@+id/contactBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_width="40dp"
+            android:layout_height="38dp"
             android:onClick="getHintContactWord"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
             app:layout_constraintEnd_toStartOf="@+id/cancelContact"
             app:layout_constraintTop_toTopOf="@+id/layout_message_send"
-            app:srcCompat="@android:drawable/checkbox_on_background" />
+            app:srcCompat="@drawable/selected" />
     </android.support.constraint.ConstraintLayout>
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="45dp"
+        android:layout_height="43dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/leave" />
 
 </android.support.constraint.ConstraintLayout>

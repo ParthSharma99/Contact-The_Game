@@ -28,7 +28,9 @@
         android:maxWidth="240dp"
         android:padding="8dp"
         android:text="hi man, how are you?"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="#ffffff"
+        android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/selected"
         app:layout_constraintTop_toTopOf="parent" />
 

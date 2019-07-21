@@ -41,8 +41,7 @@
         android:background="@drawable/border"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-
-        android:text=" "
+        android:text=""
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         android:textColor="@color/colorPrimary"

@@ -28,6 +28,7 @@
         android:padding="8dp"
         android:text="hi man, how are you?"
         android:textColor="#ffffff"
+        android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/selected"
         app:layout_constraintTop_toTopOf="parent" />
 
