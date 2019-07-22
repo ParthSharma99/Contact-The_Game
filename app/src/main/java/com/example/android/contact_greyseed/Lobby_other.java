@@ -17,6 +17,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class Lobby_other extends AppCompatActivity {
@@ -38,21 +39,29 @@ public class Lobby_other extends AppCompatActivity {
         playerList = findViewById(R.id.list_players);
 
         playerNames = new ArrayList<>();
-        playerNames.add(new playerName().getName());
+//        playerNames.add(new playerName().getName());
 
         adapter = new ArrayAdapter<>(Lobby_other.this,android.R.layout.simple_list_item_1,playerNames);
         playerList.setAdapter(adapter);
 
         gameCode = Objects.requireNonNull(getIntent().getExtras()).getString("gameCode");
         codeView.setText(gameCode);
-//        Toast.makeText(this, gameCode, Toast.LENGTH_SHORT).show();
+
         while(gameCode == null){gameCode = Objects.requireNonNull(getIntent().getExtras()).getString("gameCode");}
         new playerName().setGameCode(gameCode);
-        players.addValueEventListener(new ValueEventListener() {
+        playerList.setClickable(false);
+
+        players.child(gameCode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                while(dataSnapshot.child(gameCode).getValue() == null){}
-                playerNames =(ArrayList<String>) dataSnapshot.child(gameCode).getValue();
+                if(dataSnapshot.getValue() == null){return;}
+                HashMap<String,String> data = (HashMap<String, String>) Objects.requireNonNull(dataSnapshot).getValue();
+                if(data == null || data.keySet().isEmpty())return;
+                for(String s : data.keySet()){
+                    if(!playerNames.contains(s)){
+                        playerNames.add(s);
+                    }
+                }
                 adapter = new ArrayAdapter<>(Lobby_other.this,android.R.layout.simple_list_item_1,playerNames);
                 playerList.setAdapter(adapter);
             }
@@ -87,23 +96,7 @@ public class Lobby_other extends AppCompatActivity {
     }
 
     public void leave(View view){
-        players.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                while(dataSnapshot.child(gameCode).getValue() == null){}
-                playerNames =(ArrayList<String>) dataSnapshot.child(gameCode).getValue();
-                playerNames.remove(new playerName().getName());
-                adapter = new ArrayAdapter<>(Lobby_other.this,android.R.layout.simple_list_item_1,playerNames);
-                playerList.setAdapter(adapter);
-                players.child(gameCode).setValue(playerNames);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
+        players.child(gameCode).child(new playerName().getName()).removeValue();
         finish();
     }
 }

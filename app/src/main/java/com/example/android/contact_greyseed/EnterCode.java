@@ -21,7 +21,6 @@ import java.util.ArrayList;
 
 public class EnterCode extends AppCompatActivity {
     private DatabaseReference ref,players;
-    private boolean enter = false;
     private ArrayList<String> playerNames;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,34 +55,11 @@ public class EnterCode extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 //                Toast.makeText(EnterCode.this, dataSnapshot.getValue().toString(), Toast.LENGTH_SHORT).show();
-                if (dataSnapshot.hasChild(txt.toUpperCase())) {
-                    enter = true;
-                }
-                if(enter){
-                    Toast.makeText(EnterCode.this, "Here", Toast.LENGTH_SHORT).show();
-                    players.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                            Toast.makeText(EnterCode.this, dataSnapshot.child(text.getText().toString()).getValue().toString(), Toast.LENGTH_SHORT).show();
-                            while(dataSnapshot.child(txt.toUpperCase()).getValue() == null){
-
-                            }
-                            playerNames =(ArrayList<String>) dataSnapshot.child(txt).getValue();
-                            if(!playerNames.contains(new playerName().getName()))
-                                playerNames.add(new playerName().getName());
-//                            Toast.makeText(EnterCode.this, playerNames.toString(), Toast.LENGTH_SHORT).show();
-                            players.child(text.getText().toString().toUpperCase()).setValue(playerNames);
-                            Intent intent = new Intent(EnterCode.this,Lobby_other.class);
-                            intent.putExtra("gameCode",text.getText().toString());
-                            startActivity(intent);
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
+                if (dataSnapshot.hasChild(txt)) {
+                    players.child(txt).child(new playerName().getName()).setValue("Player");
+                    Intent intent = new Intent(EnterCode.this,Lobby_other.class);
+                    intent.putExtra("gameCode",text.getText().toString());
+                    startActivity(intent);
                 }
 
             }

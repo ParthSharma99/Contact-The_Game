@@ -62,6 +62,7 @@ public class Lobby extends AppCompatActivity {
         gameCodeName.add("MONTE");
         gameCodeName.add("CHASE");
 
+        playerList.setClickable(false);
 //        name = gameCodeName.get(n1) + " " + gameCodeName.get(n2);
         adapter = new ArrayAdapter<>(Lobby.this,android.R.layout.simple_list_item_1,playerNames);
         playerList.setAdapter(adapter);
@@ -89,7 +90,7 @@ public class Lobby extends AppCompatActivity {
                     hints.child(name).child("NotThis").setValue(0);
                     playerNames.add(new playerName().getName());
                     adapter.notifyDataSetChanged();
-                    players.child(name).setValue(playerNames);
+                    players.child(name).child(new playerName().getName()).setValue("HOST");
                     check();
                 }
 
@@ -105,12 +106,17 @@ public class Lobby extends AppCompatActivity {
 
     private void check(){
 
-        players.addValueEventListener(new ValueEventListener() {
+        players.child(name).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                while(dataSnapshot.child(name).getValue() == null){}
-                HashMap<String,ArrayList<String>> temp = (HashMap<String,ArrayList<String>>) dataSnapshot.getValue();
-                playerNames =temp.get(name);
+                while(dataSnapshot.getValue() == null){}
+                HashMap<String,String> temp = (HashMap<String,String>) dataSnapshot.getValue();
+                if(temp == null || temp.keySet().isEmpty())return;
+                for(String s:   temp.keySet()){
+                    if(!playerNames.contains(s)){
+                        playerNames.add(s);
+                    }
+                }
                 adapter = new ArrayAdapter<>(Lobby.this,android.R.layout.simple_list_item_1,playerNames);
                 playerList.setAdapter(adapter);
             }
@@ -130,9 +136,6 @@ public class Lobby extends AppCompatActivity {
 
     public void start(View view){
         if(name == ""){return;}
-
-//        ref.child(name).setValue("Begun");
-
         Intent intent = new Intent(Lobby.this,EnterContactWord.class);
         startActivity(intent);
     }

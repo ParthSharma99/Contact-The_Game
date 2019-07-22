@@ -7,42 +7,30 @@
     android:layout_height="match_parent"
     tools:context=".player_game_screen">
 
-    <TextView
-        android:id="@+id/wordArea"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="5dp"
-        android:background="@drawable/border"
-        android:letterSpacing="1"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:textAlignment="center"
-        android:textAllCaps="true"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:layout_marginEnd="8dp"
+        android:onClick="leave"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/leave" />
+
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageButton2" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/message_box"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:scrollbars="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/layout_hint_track"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/wordArea" />
-
     <android.support.constraint.ConstraintLayout
         android:id="@+id/constraintLayout2"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -74,169 +62,351 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-    </android.support.constraint.ConstraintLayout>
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/layout_hint_track"
-        android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/layout_message_send"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/hintTrackView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="visible"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0">
+            app:layout_constraintTop_toTopOf="parent">
 
-        </android.support.v7.widget.RecyclerView>
+            <ImageView
+                android:id="@+id/heart1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/life"
+                android:padding="5dp" />
+
+            <ImageView
+                android:id="@+id/heart2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/life"
+                android:padding="5dp" />
+
+            <ImageView
+                android:id="@+id/heart3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/life"
+                android:padding="5dp" />
+
+            <ImageView
+                android:id="@+id/heart4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/life"
+                android:padding="5dp" />
+
+            <ImageView
+                android:id="@+id/heart5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="@drawable/life"
+                android:padding="5dp" />
+        </LinearLayout>
+
+
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/layout_message_send"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="2dp"
+        android:id="@+id/main_player"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/divider3">
 
-        <EditText
-            android:id="@+id/hint_message"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="24dp"
-            android:background="@null"
-            android:ems="10"
-            android:hint="Type a hint"
-            android:inputType="textPersonName"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button9"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <Button
-            android:id="@+id/addHints"
-            style="@android:style/Widget.Material.Button.Colored"
+        <TextView
+            android:id="@+id/wordArea"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            android:onClick="addHints"
-            android:text="ADD HINT"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:letterSpacing="1"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="@color/colorPrimary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/players_list" />
+
+        <ListView
+            android:id="@+id/players_list"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/deleteTrack"
-            style="@android:style/Widget.Material.Button.Colored"
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/wordArea"
+            app:srcCompat="@color/colorPrimary" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView"
+            app:layout_constraintEnd_toEndOf="@+id/imageView"
+            app:layout_constraintTop_toTopOf="@+id/imageView">
+
+            <ImageView
+                android:id="@+id/cross1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/uncross"
+                android:padding="5dp" />
+
+            <ImageView
+                android:id="@+id/cross2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/uncross"
+                android:padding="5dp" />
+
+            <ImageView
+                android:id="@+id/cross3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/uncross"
+                android:padding="5dp" />
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/message_box"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:scrollbars="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/layout_hint_track"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_hint_track"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/layout_message_send"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/hintTrackView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0">
+
+            </android.support.v7.widget.RecyclerView>
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/layout_message_send"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:onClick="deleteHintTrack"
-            android:text="Delete"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent">
 
-        <ImageButton
-            android:id="@+id/button9"
-            style="@style/Widget.AppCompat.ImageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="send_msg"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/send" />
+            <EditText
+                android:id="@+id/hint_message"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="24dp"
+                android:background="@null"
+                android:ems="10"
+                android:hint="Type a hint"
+                android:inputType="textPersonName"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/button9"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
 
-        <Button
-            android:id="@+id/breakContact"
-            style="@android:style/Widget.Material.Button.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="breakContact"
-            android:text=" Break  Contact"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.553"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <Button
+                android:id="@+id/addHints"
+                style="@android:style/Widget.Material.Button.Colored"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:onClick="addHints"
+                android:text="ADD HINT"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/imageContact"
-            android:layout_width="38dp"
-            android:layout_height="41dp"
-            android:onClick="makeContact"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
-            app:layout_constraintEnd_toStartOf="@+id/imageCancel"
-            app:layout_constraintTop_toTopOf="@+id/layout_message_send"
-            app:layout_constraintVertical_bias="0.482"
-            app:srcCompat="@drawable/confirm" />
+            <Button
+                android:id="@+id/deleteTrack"
+                style="@android:style/Widget.Material.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:onClick="deleteHintTrack"
+                android:text="Delete"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/imageCancel"
-            android:layout_width="38dp"
-            android:layout_height="41dp"
-            android:onClick="resetAdapter"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
-            app:layout_constraintEnd_toEndOf="@+id/layout_message_send"
-            app:layout_constraintTop_toTopOf="@+id/layout_message_send"
-            app:layout_constraintVertical_bias="0.482"
-            app:srcCompat="@drawable/deny" />
+            <ImageButton
+                android:id="@+id/button9"
+                style="@style/Widget.AppCompat.ImageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="send_msg"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/send" />
 
-        <ImageButton
-            android:id="@+id/cancelContact"
-            android:layout_width="40dp"
-            android:layout_height="38dp"
-            android:onClick="resetAdapter"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
-            app:layout_constraintEnd_toEndOf="@+id/layout_message_send"
-            app:layout_constraintTop_toTopOf="@+id/layout_message_send"
-            app:srcCompat="@drawable/deny" />
+            <Button
+                android:id="@+id/breakContact"
+                style="@android:style/Widget.Material.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:onClick="breakContact"
+                android:text=" Break  Contact"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/contacted_word"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/contactBtn"
-            android:layout_width="40dp"
-            android:layout_height="38dp"
-            android:onClick="getHintContactWord"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
-            app:layout_constraintEnd_toStartOf="@+id/cancelContact"
-            app:layout_constraintTop_toTopOf="@+id/layout_message_send"
-            app:srcCompat="@drawable/selected" />
+            <ImageButton
+                android:id="@+id/imageContact"
+                android:layout_width="38dp"
+                android:layout_height="41dp"
+                android:onClick="makeContact"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
+                app:layout_constraintEnd_toStartOf="@+id/imageCancel"
+                app:layout_constraintTop_toTopOf="@+id/layout_message_send"
+                app:layout_constraintVertical_bias="0.482"
+                app:srcCompat="@drawable/confirm" />
+
+            <ImageButton
+                android:id="@+id/imageCancel"
+                android:layout_width="38dp"
+                android:layout_height="41dp"
+                android:onClick="resetAdapter"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
+                app:layout_constraintEnd_toEndOf="@+id/layout_message_send"
+                app:layout_constraintTop_toTopOf="@+id/layout_message_send"
+                app:layout_constraintVertical_bias="0.482"
+                app:srcCompat="@drawable/deny" />
+
+            <ImageButton
+                android:id="@+id/cancelContact"
+                android:layout_width="40dp"
+                android:layout_height="38dp"
+                android:onClick="resetAdapter"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
+                app:layout_constraintEnd_toEndOf="@+id/layout_message_send"
+                app:layout_constraintTop_toTopOf="@+id/layout_message_send"
+                app:srcCompat="@drawable/deny" />
+
+            <ImageButton
+                android:id="@+id/contactBtn"
+                android:layout_width="40dp"
+                android:layout_height="38dp"
+                android:onClick="getHintContactWord"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
+                app:layout_constraintEnd_toStartOf="@+id/cancelContact"
+                app:layout_constraintTop_toTopOf="@+id/layout_message_send"
+                app:srcCompat="@drawable/selected" />
+
+            <TextView
+                android:id="@+id/contacted_word"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:onClick="changeContactWord"
+                android:text="CONTACT ;"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/hint_message"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
     </android.support.constraint.ConstraintLayout>
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/imageButton"
         android:layout_width="45dp"
-        android:layout_height="43dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="45dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:onClick="playerList"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/leave" />
+        app:srcCompat="@drawable/users" />
 
 </android.support.constraint.ConstraintLayout>
