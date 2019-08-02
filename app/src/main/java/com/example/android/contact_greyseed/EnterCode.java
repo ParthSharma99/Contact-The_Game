@@ -36,21 +36,25 @@ public class EnterCode extends AppCompatActivity {
             }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
             public void afterTextChanged(Editable editable) {
                 if(editable.length() == 5){
                     editable.append(" ");
                 }
-
             }
         });
     }
 
     public void enter(View view) {
-        final EditText text = findViewById(R.id.codeEntered);
-        final String txt = text.getText().toString().toUpperCase();
+        EditText text = findViewById(R.id.codeEntered);
+        final String txt = text.getText().toString().toUpperCase().trim();
+        if(txt.length() != 11){
+            text.setText("");
+            text.setHint("Enter Code");
+        }
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -58,7 +62,7 @@ public class EnterCode extends AppCompatActivity {
                 if (dataSnapshot.hasChild(txt)) {
                     players.child(txt).child(new playerName().getName()).setValue("Player");
                     Intent intent = new Intent(EnterCode.this,Lobby_other.class);
-                    intent.putExtra("gameCode",text.getText().toString());
+                    intent.putExtra("gameCode",txt);
                     startActivity(intent);
                 }
 

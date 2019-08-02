@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -23,8 +25,8 @@ import java.util.Objects;
 public class Lobby_other extends AppCompatActivity {
     static DatabaseReference players,ref;
     static ArrayList<String> playerNames;
-    ListView playerList;
-    ArrayAdapter<String> adapter;
+    RecyclerView playerList;
+    PlayersListViewAdapter adapter;
     String gameCode;
     TextView codeView;
 
@@ -37,11 +39,15 @@ public class Lobby_other extends AppCompatActivity {
         players = FirebaseDatabase.getInstance().getReference("Players");
         ref = FirebaseDatabase.getInstance().getReference("Games");
         playerList = findViewById(R.id.list_players);
+        playerList.setHasFixedSize(true);
+        playerList.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+
+
 
         playerNames = new ArrayList<>();
 //        playerNames.add(new playerName().getName());
 
-        adapter = new ArrayAdapter<>(Lobby_other.this,android.R.layout.simple_list_item_1,playerNames);
+        adapter = new PlayersListViewAdapter(playerNames);
         playerList.setAdapter(adapter);
 
         gameCode = Objects.requireNonNull(getIntent().getExtras()).getString("gameCode");
@@ -56,14 +62,18 @@ public class Lobby_other extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getValue() == null){return;}
                 HashMap<String,String> data = (HashMap<String, String>) Objects.requireNonNull(dataSnapshot).getValue();
+                playerNames.clear();
                 if(data == null || data.keySet().isEmpty())return;
                 for(String s : data.keySet()){
+                    if(s.equals("NotThis") && data.get(s).equals("NotThis"))continue;
+                    if(data.get(s).equals("HOST")){
+                        adapter.host = s;
+                    }
                     if(!playerNames.contains(s)){
                         playerNames.add(s);
                     }
                 }
-                adapter = new ArrayAdapter<>(Lobby_other.this,android.R.layout.simple_list_item_1,playerNames);
-                playerList.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -84,7 +94,11 @@ public class Lobby_other extends AppCompatActivity {
 
                 if(dataSnapshot.child(gameCode).getValue(String.class).equals("Begun")){
                     Intent intent = new Intent(Lobby_other.this,player_game_screen.class);
-                    startActivity(intent);
+                    startActivityForResult(intent,1);
+                    finish();
+                }else if(dataSnapshot.child(gameCode).getValue(String.class).equals("End") || new playerName().getGameCode().equals("")){
+                    finishActivity(1);
+                    finish();
                 }
             }
 

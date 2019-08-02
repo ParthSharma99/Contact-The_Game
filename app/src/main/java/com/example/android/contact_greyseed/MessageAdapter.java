@@ -94,18 +94,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
                     ((ReceivedViewHolder) viewHolder).unselect.setVisibility(View.GONE);
                     ((ReceivedViewHolder) viewHolder).select.setVisibility(View.GONE);
                 }
-//                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        msg.toggleSelect();
-//
-//                        if(msg.isSelected() && ((ReceivedViewHolder) viewHolder).select.getVisibility()==View.GONE){
-//                            ((ReceivedViewHolder) viewHolder).select.setVisibility(View.VISIBLE);
-//                        }else{
-//                            ((ReceivedViewHolder) viewHolder).select.setVisibility(View.GONE);
-//                        }
-//                    }
-//                });
             }
             else if(viewHolder.getItemViewType() == VIEW_TYPE_MESSAGE_SENT){
                 ((SentViewHolder)viewHolder).message.setText(msg.getMsg());
@@ -121,18 +109,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
                     ((SentViewHolder) viewHolder).select.setVisibility(View.GONE);
                 }
 
-//                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//
-//                        msg.toggleSelect();
-//                        if(msg.isSelected() && ((SentViewHolder) viewHolder).select.getVisibility() == View.GONE){
-//                            ((SentViewHolder) viewHolder).select.setVisibility(View.VISIBLE);
-//                        }else{
-//                            ((SentViewHolder) viewHolder).select.setVisibility(View.GONE);
-//                        }
-//                    }
-//                });
             }
             else if(viewHolder.getItemViewType() == VIEW_TYPE_MESSAGE_UNIVERSAL){
                 ((UniversalViewHolder)viewHolder).message.setText(msg.getMsg());
@@ -152,20 +128,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
                     ((ReceivedLeaderViewHolder) viewHolder).unselect.setVisibility(View.GONE);
                     ((ReceivedLeaderViewHolder) viewHolder).select.setVisibility(View.GONE);
                 }
-
-//                    viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            msg.toggleSelect();
-//
-//                            if(msg.isSelected() && ((ReceivedLeaderViewHolder) viewHolder).select.getVisibility()==View.GONE){
-//                                ((ReceivedLeaderViewHolder) viewHolder).select.setVisibility(View.VISIBLE);
-//                            }else{
-//                                ((ReceivedLeaderViewHolder) viewHolder).select.setVisibility(View.GONE);
-//                            }
-//                        }
-//                    });
-
             }
     }
 

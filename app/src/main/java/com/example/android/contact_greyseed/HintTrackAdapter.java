@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -33,16 +34,17 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         final HintTrack hintTrack = list.get(i);
+        if(!hintTrack.getSelected())
+            ((ViewHolder)viewHolder).icon.setBackgroundResource(R.drawable.hint_track_unselect);
         ((ViewHolder)viewHolder).number.setText(String.valueOf(hintTrack.hintTrackNumber));
-        ((ViewHolder)viewHolder).no_contacts.setText(String.valueOf(hintTrack.count));
 
 //        ((ViewHolder)viewHolder).letter.setText(String.valueOf(hintTrack.author.toUpperCase().charAt(0)));
         if(hintTrack.count > 1){
-
-            ((ViewHolder)viewHolder).letter.setBackgroundResource(R.drawable.hints_active);
+            ((ViewHolder)viewHolder).no_contacts.setText(String.valueOf(hintTrack.count));
+            ((ViewHolder)viewHolder).state_no_contacts.setImageResource(R.drawable.hints_active);
         }else{
 
-            ((ViewHolder)viewHolder).letter.setBackgroundResource(R.drawable.hints);
+            ((ViewHolder)viewHolder).state_no_contacts.setImageResource(R.drawable.hints);
         }
 
 //        ((ViewHolder)viewHolder).letter.setText(hintTrack.getName().charAt(0));
@@ -53,14 +55,15 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        public TextView letter;
+        public ImageView state_no_contacts,icon;
         public TextView number;
         public TextView no_contacts;
 
         OnHintClickListener clickListener;
         public ViewHolder(@NonNull View itemView, OnHintClickListener listener) {
             super(itemView);
-            letter = itemView.findViewById(R.id.hint_track_letter);
+            icon = itemView.findViewById(R.id.hint_track_icon);
+            state_no_contacts = itemView.findViewById(R.id.hint_bg);
             number = itemView.findViewById(R.id.hint_track_number);
             no_contacts = itemView.findViewById(R.id.number_of_contacts);
             this.clickListener = listener;
@@ -69,6 +72,7 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View view) {
+            icon.setBackgroundResource(R.drawable.ic_hint_track_select);
             clickListener.onClick(getAdapterPosition());
         }
 

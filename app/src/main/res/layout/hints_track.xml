@@ -5,36 +5,59 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/hint_track_letter"
-        android:layout_width="48sp"
-        android:layout_height="48sp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="2dp"
-        android:background="@drawable/hints"
-        android:padding="6dp"
-        android:text=" H"
-        android:textSize="30sp"
+    <ImageView
+        android:id="@+id/hint_track_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_hint_track_select"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_hint_track" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/hint_number" />
 
     <TextView
         android:id="@+id/hint_track_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="13dp"
+        android:layout_marginBottom="8dp"
         android:text="1"
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textSize="15sp"
+        android:textAppearance="@android:style/TextAppearance.Material"
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/hint_track_letter" />
+        app:layout_constraintEnd_toEndOf="@+id/hint_track_icon" />
+
+    <ImageView
+        android:id="@+id/hint_bg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/hints" />
 
     <TextView
         android:id="@+id/number_of_contacts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="13dp"
+        android:layout_marginTop="7dp"
         android:fontFamily="sans-serif"
-        android:text="1"
-        android:textSize="16sp"
+        android:text=" "
+        android:textColor="@color/common_google_signin_btn_text_dark_default"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

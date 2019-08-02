@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context=".EnterCode">
 
     <EditText
@@ -13,8 +14,9 @@
         android:layout_marginTop="120dp"
         android:background="@null"
         android:hint="ENTER CODE"
-        android:inputType="textCapCharacters"
+        android:inputType="textCapCharacters|textVisiblePassword"
         android:letterSpacing="1"
+        android:maxLength="11"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent"

@@ -41,7 +41,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/selected" />
+        app:srcCompat="@drawable/ic_selected" />
 
     <ImageView
         android:id="@+id/unselected"
@@ -55,6 +55,6 @@
         app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintStart_toEndOf="@+id/text_message_body"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/unselected" />
+        app:srcCompat="@drawable/ic_unselected" />
 
 </android.support.constraint.ConstraintLayout>

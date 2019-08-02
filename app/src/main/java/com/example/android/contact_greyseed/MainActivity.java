@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -52,5 +53,10 @@ public class MainActivity extends AppCompatActivity {
     public void user(View view){
         Intent intent = new Intent(MainActivity.this,EnterUsername.class);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return false;
     }
 }

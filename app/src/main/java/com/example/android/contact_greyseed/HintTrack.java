@@ -10,6 +10,7 @@ public class HintTrack {
     private int idx = 0;
     public String timeStamp = "";
     public int hintTrackNumber = 0;
+    boolean selected = false;
 
     public HintTrack( ArrayList<Integer> list,ArrayList<Message> track,String a,int h,String timeStamp) {
         this.list = list;
@@ -24,6 +25,8 @@ public class HintTrack {
         idx = (idx+1)%list.size();
         return temp;
     }
-
+    public void setSelected(){selected = true;}
+    public boolean getSelected(){return selected;}
+    public void toggleSelected(){selected = !selected;}
 
 }

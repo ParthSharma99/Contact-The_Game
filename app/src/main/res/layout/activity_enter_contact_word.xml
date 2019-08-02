@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     tools:context=".EnterContactWord">
 
     <EditText
@@ -13,10 +14,9 @@
         android:layout_marginTop="120dp"
         android:background="@null"
         android:hint="ENTER WORD"
-        android:inputType="textCapCharacters"
+        android:inputType="textCapCharacters|textNoSuggestions"
         android:letterSpacing="1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.621"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

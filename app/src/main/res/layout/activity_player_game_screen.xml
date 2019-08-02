@@ -9,14 +9,15 @@
 
     <ImageButton
         android:id="@+id/imageButton2"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:background="@null"
         android:onClick="leave"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/leave" />
+        app:srcCompat="@drawable/ic_leave" />
 
     <View
         android:id="@+id/divider3"
@@ -29,6 +30,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/constraintLayout2"
+        android:animateLayoutChanges="true"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
@@ -79,8 +81,9 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
-                android:background="@drawable/life"
-                android:padding="5dp" />
+                android:background="@null"
+                android:padding="0dp"
+                app:srcCompat="@drawable/ic_heart" />
 
             <ImageView
                 android:id="@+id/heart2"
@@ -89,8 +92,9 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
-                android:background="@drawable/life"
-                android:padding="5dp" />
+                android:background="@null"
+                android:padding="0dp"
+                app:srcCompat="@drawable/ic_heart" />
 
             <ImageView
                 android:id="@+id/heart3"
@@ -99,8 +103,9 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
-                android:background="@drawable/life"
-                android:padding="5dp" />
+                android:background="@null"
+                android:padding="0dp"
+                app:srcCompat="@drawable/ic_heart" />
 
             <ImageView
                 android:id="@+id/heart4"
@@ -109,8 +114,9 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
-                android:background="@drawable/life"
-                android:padding="5dp" />
+                android:background="@null"
+                android:padding="0dp"
+                app:srcCompat="@drawable/ic_heart" />
 
             <ImageView
                 android:id="@+id/heart5"
@@ -119,8 +125,9 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
-                android:background="@drawable/life"
-                android:padding="5dp" />
+                android:background="@null"
+                android:padding="0dp"
+                app:srcCompat="@drawable/ic_heart" />
         </LinearLayout>
 
 
@@ -128,6 +135,7 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/main_player"
+        android:animateLayoutChanges="true"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
@@ -138,10 +146,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="4dp"
             android:letterSpacing="1"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
+            android:text="       "
             android:textAlignment="center"
             android:textAllCaps="true"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
@@ -151,24 +161,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/players_list" />
 
-        <ListView
-            android:id="@+id/players_list"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="0dp"
             android:layout_height="40dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
@@ -180,7 +177,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:animateLayoutChanges="true"
             android:orientation="horizontal"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/imageView"
             app:layout_constraintEnd_toEndOf="@+id/imageView"
             app:layout_constraintTop_toTopOf="@+id/imageView">
@@ -192,8 +191,8 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
-                android:background="@drawable/uncross"
-                android:padding="5dp" />
+                android:background="@null"
+                app:srcCompat="@drawable/ic_unclicked_cross" />
 
             <ImageView
                 android:id="@+id/cross2"
@@ -202,8 +201,8 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
-                android:background="@drawable/uncross"
-                android:padding="5dp" />
+                android:background="@null"
+                app:srcCompat="@drawable/ic_unclicked_cross" />
 
             <ImageView
                 android:id="@+id/cross3"
@@ -212,8 +211,8 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
-                android:background="@drawable/uncross"
-                android:padding="5dp" />
+                android:background="@null"
+                app:srcCompat="@drawable/ic_unclicked_cross" />
         </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
@@ -223,6 +222,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:scrollbars="horizontal"
+            android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@+id/layout_hint_track"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
@@ -235,6 +235,8 @@
             android:layout_height="55dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:animateLayoutChanges="true"
+            android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@+id/layout_message_send"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -259,6 +261,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:animateLayoutChanges="true"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -266,12 +270,13 @@
             <EditText
                 android:id="@+id/hint_message"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginEnd="24dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="48dp"
                 android:background="@null"
                 android:ems="10"
                 android:hint="Type a hint"
-                android:inputType="textPersonName"
+                android:inputType="textNoSuggestions|textPersonName|textVisiblePassword"
+                android:minHeight="40dp"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/button9"
@@ -314,12 +319,14 @@
                 style="@style/Widget.AppCompat.ImageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@null"
                 android:onClick="send_msg"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/send" />
+                app:srcCompat="@drawable/ic_send" />
 
             <Button
                 android:id="@+id/breakContact"
@@ -337,8 +344,10 @@
 
             <ImageButton
                 android:id="@+id/imageContact"
-                android:layout_width="38dp"
-                android:layout_height="41dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@null"
                 android:onClick="makeContact"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
@@ -349,8 +358,10 @@
 
             <ImageButton
                 android:id="@+id/imageCancel"
-                android:layout_width="38dp"
-                android:layout_height="41dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:background="@null"
                 android:onClick="resetAdapter"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
@@ -361,8 +372,10 @@
 
             <ImageButton
                 android:id="@+id/cancelContact"
-                android:layout_width="40dp"
-                android:layout_height="38dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:background="@null"
                 android:onClick="resetAdapter"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
@@ -372,14 +385,16 @@
 
             <ImageButton
                 android:id="@+id/contactBtn"
-                android:layout_width="40dp"
-                android:layout_height="38dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@null"
                 android:onClick="getHintContactWord"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
                 app:layout_constraintEnd_toStartOf="@+id/cancelContact"
                 app:layout_constraintTop_toTopOf="@+id/layout_message_send"
-                app:srcCompat="@drawable/selected" />
+                app:srcCompat="@drawable/confirm" />
 
             <TextView
                 android:id="@+id/contacted_word"
@@ -396,17 +411,50 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </android.support.constraint.ConstraintLayout>
 
+        <TextView
+            android:id="@+id/player_list_game_code"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/border"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text=""
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="@color/colorPrimary"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/players_list"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/player_list_game_code" />
+
     </android.support.constraint.ConstraintLayout>
 
     <ImageButton
         android:id="@+id/imageButton"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:background="@null"
         android:onClick="playerList"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/users" />
+        app:srcCompat="@drawable/ic_users" />
 
 </android.support.constraint.ConstraintLayout>

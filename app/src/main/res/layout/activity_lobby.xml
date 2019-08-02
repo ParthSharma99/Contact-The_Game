@@ -24,12 +24,13 @@
         android:id="@+id/cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="17dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:background="@null"
         android:onClick="cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_delete" />
+        app:srcCompat="@drawable/ic_leave" />
 
     <TextView
         android:id="@+id/gameCode"
@@ -55,7 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="87dp"
-        android:text="PLAYERS"
+        android:text="PLAYERS :"
         android:textAlignment="textStart"
         android:textAllCaps="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
@@ -65,14 +66,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/playerList"
-        android:layout_width="368dp"
-        android:layout_height="247dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="24dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/button7"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -80,7 +82,7 @@
 
     <Button
         android:id="@+id/button7"
-        style="@style/Widget.AppCompat.Button"
+        style="@android:style/Widget.Material.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -91,5 +93,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/contactWordEnter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:background="@null"
+        android:hint="ENTER WORD"
+        android:inputType="textCapCharacters|textNoSuggestions|textVisiblePassword"
+        android:letterSpacing="1"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
 </android.support.constraint.ConstraintLayout>
