@@ -163,13 +163,13 @@ public class Lobby extends AppCompatActivity {
         EditText text = findViewById(R.id.contactWordEnter);
         gameWord = FirebaseDatabase.getInstance().getReference("GameWord");
         contactWord = FirebaseDatabase.getInstance().getReference("ContactWord").child(new playerName().getGameCode());
-        contactWord.child(name).child("Status").setValue("No Contact");
+        contactWord.child("Status").setValue("No Contact");
 
         String s = text.getText().toString();
         s = s.toUpperCase().trim();
-        if(s.contains(" ")){
+        if(s.contains(" ") || s.equals("")){
             text.setText("");
-            text.setHint("Enter Word");
+            text.setHint("ENTER WORD");
             return;
         }
         gameWord.child(name).child("Word").setValue(s);

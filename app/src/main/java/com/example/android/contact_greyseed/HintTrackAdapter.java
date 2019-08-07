@@ -1,5 +1,7 @@
 package com.example.android.contact_greyseed;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -34,8 +36,9 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         final HintTrack hintTrack = list.get(i);
-        if(!hintTrack.getSelected())
-            ((ViewHolder)viewHolder).icon.setBackgroundResource(R.drawable.hint_track_unselect);
+        if(!hintTrack.getSelected()){
+            ((ViewHolder)viewHolder).icon.setVisibility(View.GONE);
+        }
         ((ViewHolder)viewHolder).number.setText(String.valueOf(hintTrack.hintTrackNumber));
 
 //        ((ViewHolder)viewHolder).letter.setText(String.valueOf(hintTrack.author.toUpperCase().charAt(0)));
@@ -62,7 +65,7 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
         OnHintClickListener clickListener;
         public ViewHolder(@NonNull View itemView, OnHintClickListener listener) {
             super(itemView);
-            icon = itemView.findViewById(R.id.hint_track_icon);
+            icon = itemView.findViewById(R.id.border_select_hint_track);
             state_no_contacts = itemView.findViewById(R.id.hint_bg);
             number = itemView.findViewById(R.id.hint_track_number);
             no_contacts = itemView.findViewById(R.id.number_of_contacts);
@@ -72,7 +75,8 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
 
         @Override
         public void onClick(View view) {
-            icon.setBackgroundResource(R.drawable.ic_hint_track_select);
+//            icon.setImageAlpha(0);
+            icon.setVisibility(View.VISIBLE);
             clickListener.onClick(getAdapterPosition());
         }
 

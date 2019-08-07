@@ -3,18 +3,16 @@ package com.example.android.contact_greyseed;
 import java.util.ArrayList;
 
 public class HintTrack {
-    public ArrayList<Message> track;
     public ArrayList<Integer> list;
     public String author = "";
     public long count = 1;
     private int idx = 0;
     public String timeStamp = "";
     public int hintTrackNumber = 0;
-    boolean selected = false;
+    private boolean selected = false;
 
-    public HintTrack( ArrayList<Integer> list,ArrayList<Message> track,String a,int h,String timeStamp) {
+    public HintTrack( ArrayList<Integer> list,String a,int h,String timeStamp) {
         this.list = list;
-        this.track = track;
         this.author = a;
         this.hintTrackNumber = h;
         this.timeStamp = timeStamp;
