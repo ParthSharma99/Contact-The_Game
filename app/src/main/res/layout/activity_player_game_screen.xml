@@ -221,195 +221,14 @@
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:paddingBottom="10dp"
             android:scrollbars="horizontal"
+            android:translationY="15dp"
             android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@+id/layout_hint_track"
+            app:layout_constraintBottom_toTopOf="@+id/cardView4"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView" />
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/layout_hint_track"
-            android:layout_width="0dp"
-            android:layout_height="55dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:animateLayoutChanges="true"
-            android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@+id/layout_message_send"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/hintTrackView"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0">
-
-            </android.support.v7.widget.RecyclerView>
-        </android.support.constraint.ConstraintLayout>
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/layout_message_send"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:animateLayoutChanges="true"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <EditText
-                android:id="@+id/hint_message"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="48dp"
-                android:background="@null"
-                android:ems="10"
-                android:hint="Type a hint"
-                android:inputType="textNoSuggestions|textPersonName|textVisiblePassword"
-                android:minHeight="40dp"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/button9"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <Button
-                android:id="@+id/addHints"
-                style="@android:style/Widget.Material.Button.Colored"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginEnd="32dp"
-                android:onClick="addHints"
-                android:text="ADD HINT"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/deleteTrack"
-                style="@android:style/Widget.Material.Button.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:onClick="deleteHintTrack"
-                android:text="Delete"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageButton
-                android:id="@+id/button9"
-                style="@style/Widget.AppCompat.ImageButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:background="@null"
-                android:onClick="send_msg"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_send" />
-
-            <Button
-                android:id="@+id/breakContact"
-                style="@android:style/Widget.Material.Button.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:onClick="breakContact"
-                android:text=" Break  Contact"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/contacted_word"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageButton
-                android:id="@+id/imageContact"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:background="@null"
-                android:onClick="makeContact"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
-                app:layout_constraintEnd_toStartOf="@+id/imageCancel"
-                app:layout_constraintTop_toTopOf="@+id/layout_message_send"
-                app:layout_constraintVertical_bias="0.482"
-                app:srcCompat="@drawable/confirm" />
-
-            <ImageButton
-                android:id="@+id/imageCancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:background="@null"
-                android:onClick="resetAdapter"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
-                app:layout_constraintEnd_toEndOf="@+id/layout_message_send"
-                app:layout_constraintTop_toTopOf="@+id/layout_message_send"
-                app:layout_constraintVertical_bias="0.482"
-                app:srcCompat="@drawable/deny" />
-
-            <ImageButton
-                android:id="@+id/cancelContact"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:background="@null"
-                android:onClick="resetAdapter"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
-                app:layout_constraintEnd_toEndOf="@+id/layout_message_send"
-                app:layout_constraintTop_toTopOf="@+id/layout_message_send"
-                app:srcCompat="@drawable/deny" />
-
-            <ImageButton
-                android:id="@+id/contactBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:background="@null"
-                android:onClick="getHintContactWord"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
-                app:layout_constraintEnd_toStartOf="@+id/cancelContact"
-                app:layout_constraintTop_toTopOf="@+id/layout_message_send"
-                app:srcCompat="@drawable/confirm" />
-
-            <TextView
-                android:id="@+id/contacted_word"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:onClick="changeContactWord"
-                android:text="CONTACT ;"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/hint_message"
-                app:layout_constraintTop_toTopOf="parent" />
-        </android.support.constraint.ConstraintLayout>
 
         <TextView
             android:id="@+id/player_list_game_code"
@@ -429,6 +248,206 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:translationY="5dp"
+            app:cardElevation="15dp"
+            app:layout_constraintBottom_toTopOf="@+id/cardView3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/layout_hint_track"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:animateLayoutChanges="true"
+                android:visibility="visible">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/hintTrackView"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginBottom="8dp"
+                    android:scrollbars="horizontal"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                </android.support.v7.widget.RecyclerView>
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/layout_message_send"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:animateLayoutChanges="true"
+                android:visibility="visible">
+
+                <EditText
+                    android:id="@+id/hint_message"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="48dp"
+                    android:background="@null"
+                    android:ems="10"
+                    android:hint="Type a hint"
+                    android:inputType="textNoSuggestions|textPersonName|textVisiblePassword"
+                    android:minHeight="40dp"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/button9"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <Button
+                    android:id="@+id/addHints"
+                    style="@android:style/Widget.Material.Button.Colored"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"
+                    android:onClick="addHints"
+                    android:text="ADD HINT"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/deleteTrack"
+                    style="@android:style/Widget.Material.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:onClick="deleteHintTrack"
+                    android:text="Delete"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/button9"
+                    style="@style/Widget.AppCompat.ImageButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@null"
+                    android:onClick="send_msg"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_send" />
+
+                <Button
+                    android:id="@+id/breakContact"
+                    style="@android:style/Widget.Material.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:onClick="breakContact"
+                    android:text=" Break  Contact"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/contacted_word"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/imageContact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@null"
+                    android:onClick="makeContact"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
+                    app:layout_constraintEnd_toStartOf="@+id/imageCancel"
+                    app:layout_constraintTop_toTopOf="@+id/layout_message_send"
+                    app:layout_constraintVertical_bias="0.482"
+                    app:srcCompat="@drawable/confirm" />
+
+                <ImageButton
+                    android:id="@+id/imageCancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:background="@null"
+                    android:onClick="resetAdapter"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
+                    app:layout_constraintEnd_toEndOf="@+id/layout_message_send"
+                    app:layout_constraintTop_toTopOf="@+id/layout_message_send"
+                    app:layout_constraintVertical_bias="0.482"
+                    app:srcCompat="@drawable/deny" />
+
+                <ImageButton
+                    android:id="@+id/cancelContact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:background="@null"
+                    android:onClick="resetAdapter"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
+                    app:layout_constraintEnd_toEndOf="@+id/layout_message_send"
+                    app:layout_constraintTop_toTopOf="@+id/layout_message_send"
+                    app:srcCompat="@drawable/deny" />
+
+                <ImageButton
+                    android:id="@+id/contactBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@null"
+                    android:onClick="getHintContactWord"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/layout_message_send"
+                    app:layout_constraintEnd_toStartOf="@+id/cancelContact"
+                    app:layout_constraintTop_toTopOf="@+id/layout_message_send"
+                    app:srcCompat="@drawable/confirm" />
+
+                <TextView
+                    android:id="@+id/contacted_word"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:onClick="changeContactWord"
+                    android:text="CONTACT ;"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/hint_message"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/players_list"

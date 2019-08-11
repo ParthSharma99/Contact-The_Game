@@ -38,6 +38,8 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
         final HintTrack hintTrack = list.get(i);
         if(!hintTrack.getSelected()){
             ((ViewHolder)viewHolder).icon.setVisibility(View.GONE);
+        }else{
+            ((ViewHolder)viewHolder).icon.setVisibility(View.VISIBLE);
         }
         ((ViewHolder)viewHolder).number.setText(String.valueOf(hintTrack.hintTrackNumber));
 

@@ -3,6 +3,11 @@ package com.example.android.contact_greyseed;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -53,17 +58,17 @@ import java.util.Objects;
 public class leader_game_screen extends AppCompatActivity implements HintTrackAdapter.OnHintClickListener,MessageAdapter.OnMessageClickListener{
 
     private DatabaseReference reference,hints,gameWord,contactWord,players,games;
-    private FirebaseAnalytics mFirebaseAnalytics;
-    private static RecyclerView recyclerView;
+    private ValueEventListener listener1,listener2,listener3;
+    private ChildEventListener childEventListener1,childEventListener2,childEventListener3;
+    private RecyclerView recyclerView;
     private RecyclerView hintTrackView;
     static public MessageAdapter adapter;
     private HintTrackAdapter hintTrackAdapter;
-    private ArrayList<Message> messages,messagesAdapter;
-    private static ArrayList<HintTrack> hintTracks,hintAdapter;
+    private ArrayList<Message> messagesAdapter;
+    private static ArrayList<HintTrack> hintTracks;
     private String gameCode,word,progress;
     private int idx = 1,i=0,temp,hintTrackSelectIdx = 0,guessTime = 0,messagesSelected = 0, hintTracksSoFar = 0, shortAnimationDuration = 100;
     private ImageButton cancelButton,cancelGuess,sendGuess,sendButton;
-    private ArrayList<HashMap<String,String>> database;
     private RecyclerView playerListView;
     private PlayersListViewAdapter playerListAdapter;
     HashMap<String,HashMap<String,String>> hintTrackContactData;
@@ -72,7 +77,8 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
     TextView wordArea,playerListGameCode;
     Button guessBtn,challengeBtn;
     EditText editText;
-    String msg,hintTrackSelectTimestamp="";
+    LiveData<DataSnapshot> liveDataMessages,liveDataPlayers,liveDataGameWord;
+    String msg,hintTrackSelectTimestamp="",datePattern;
     int currentScore = 0;
     boolean playersShown = false,playerInTheGame = false;
 
@@ -81,7 +87,6 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leader_game_screen);
 
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         recyclerView = findViewById(R.id.message_box_leader);
         hintTrackView = findViewById(R.id.hintTrackView_leader);
@@ -104,14 +109,13 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         sendGuess = findViewById(R.id.sendGuess);
         playerListGameCode = findViewById(R.id.players_game_code);
 
+        datePattern = "ddMMyyyyhhmmssSSS";
 
         hintTrackView.setHasFixedSize(true);
         hintTrackView.setLayoutManager(new LinearLayoutManager(this,LinearLayout.HORIZONTAL,false));
 
-        messages = new ArrayList<>();
         messagesAdapter = new ArrayList<>();
         hintTracks = new ArrayList<>();
-        hintAdapter = new ArrayList<>();
         msgTimeStamp = new ArrayList<>();
         hintTimeStamp = new ArrayList<>();
         guessesHintTrack = new HashMap<>();
@@ -124,7 +128,6 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
 
         shortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-        database = new ArrayList<>();
         gameCode = new playerName().getGameCode();
         if(gameCode == ""){
             Toast.makeText(this, "An error occurred.", Toast.LENGTH_SHORT).show();
@@ -145,8 +148,10 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
 
         hintTrackAdapter = new HintTrackAdapter(hintTracks,this);
         hintTrackView.setAdapter(hintTrackAdapter);
+        games.setValue("Begun");
 
-        reference.addChildEventListener(new ChildEventListener() {
+
+        childEventListener1 = reference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
@@ -179,7 +184,28 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                if(dataSnapshot.getValue()==null)return;
+                if(Objects.requireNonNull(dataSnapshot.getKey()).equals("0"))return;
+                Object ob = dataSnapshot.getValue(Object.class);
+                String data = new Gson().toJson(ob);
+                if(data == null)return;
+                Message temp = new Gson().fromJson(data,Message.class);
+                if(temp == null || temp.getSender() == null)return;
+                if(temp.getSender().equals(new playerName().getName())){
+                    temp.side = 1;
+                }else if(temp.getSender().equals("UniversalMessageCop")){
+                    temp.side = 3;
+                }
+                else{
+                    temp.side = 2;
+                }
+                for(int i=0;i<messagesAdapter.size();i++){
+                    if(messagesAdapter.get(i).timeStamp.equals(temp.timeStamp)){
+                        messagesAdapter.set(i,temp);
+                        adapter.notifyItemChanged(i);
+                        return;
+                    }
+                }
             }
 
             @Override
@@ -201,7 +227,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
             }
         });
 
-        hints.addChildEventListener(new ChildEventListener() {
+        childEventListener2 = hints.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
@@ -212,19 +238,11 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
                 Object temp = dataSnapshot.getValue(Object.class);
                 String json = new Gson().toJson(temp);
                 HintTrack ht = new Gson().fromJson(json,HintTrack.class);
-//                if(Objects.requireNonNull(temp).isEmpty())return;
-//                if(temp.size()>0){
-//                    for(int j=2;j<temp.size();j++){
-//                        int t = Integer.valueOf(temp.get(j));
-//                        if(t >=messagesAdapter.size())continue;
-//                        msg_db.add(messagesAdapter.get(t));
-//                        idx_db.add(t);
-//                    }
-//                    int num = Integer.valueOf(temp.get(2));
-                    hintTracks.add(ht);
-                    hintTimeStamp.add(dataSnapshot.getKey());
-                    hintTrackAdapter.notifyDataSetChanged();
-                    hintTrackView.smoothScrollToPosition(hintTrackAdapter.getItemCount());
+                if(hintTracks.contains(ht))return;
+                hintTracks.add(ht);
+                hintTimeStamp.add(dataSnapshot.getKey());
+                hintTrackAdapter.notifyItemInserted(hintTracks.size()-1);
+                hintTrackView.smoothScrollToPosition(hintTrackAdapter.getItemCount());
 
             }
 
@@ -247,7 +265,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
                         hintTracks.remove(hint_idx);
                         hintTrackAdapter.notifyItemRemoved(hint_idx);
 //                        guessesHintTrack.remove(dataSnapshot.getKey());
-                        hintTrackContactData.remove(hint_idx);
+                        hintTrackContactData.remove(hintTrackSelectTimestamp);
                         contactWord.child(dataSnapshot.getKey()).removeValue();
                         onClick(hintTrackSelectIdx);
                         return;
@@ -257,7 +275,8 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
                 hintTracks.remove(hint_idx);
                 hintTrackAdapter.notifyItemRemoved(hint_idx);
 //                guessesHintTrack.remove(dataSnapshot.getKey());
-                hintTrackContactData.remove(hint_idx);
+                hintTrackContactData.remove(hintTrackSelectTimestamp);
+                contactWord.child(dataSnapshot.getKey()).removeValue();
                 if(hintTrackSelectTimestamp.equals(dataSnapshot.getKey())){
                     reset();
                 }
@@ -274,7 +293,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
             }
         });
 
-        contactWord.addChildEventListener(new ChildEventListener() {
+        childEventListener3 = contactWord.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(dataSnapshot.getKey() == null)return;
@@ -354,6 +373,70 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
 
             }
         });
+
+        ViewModelPlayers viewModelPlayers = ViewModelProviders.of(this).get(ViewModelPlayers.class);
+        liveDataPlayers = viewModelPlayers.getDataSnapshotLiveData(gameCode);
+        liveDataPlayers.observe(this, new Observer<DataSnapshot>() {
+            @Override
+            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+                if(dataSnapshot == null || dataSnapshot.getValue()==null)return;
+                Object object = dataSnapshot.getValue(Object.class);
+                String json = new Gson().toJson(object);
+                Type type = new TypeToken<HashMap<String,String>>(){}.getType();
+                HashMap<String,String> data = new Gson().fromJson(json,type);
+                if(data==null || data.keySet().isEmpty())return;
+                playerList.clear();
+                playerInTheGame = false;
+                for(String s: data.keySet()){
+                    if(s.equals("NotThis") && data.get(s).equals("NotThis"))continue;
+                    if(s.equals(new playerName().getName())){playerInTheGame = true;}
+                    if(data.get(s).equals("HOST")){
+                        playerListAdapter.host = s;
+                    }
+                    if(!playerList.contains(s)){
+                        playerList.add(s);
+                    }
+                    if(s.equals(new playerName().getName())){
+                        playerInTheGame = true;
+                    }
+                }
+                playerListAdapter.notifyDataSetChanged();
+                if(!playerInTheGame){
+                    finish();
+                }
+            }
+        });
+
+        ViewModelWord viewModelWord = ViewModelProviders.of(this).get(ViewModelWord.class);
+        liveDataGameWord = viewModelWord.getDataSnapshotLiveData(gameCode);
+        liveDataGameWord.observe(this, new Observer<DataSnapshot>() {
+            @Override
+            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+                if(dataSnapshot == null || dataSnapshot.getValue()==null)return;
+                Object object = dataSnapshot.getValue(Object.class);
+                String json = new Gson().toJson(object);
+                Type type = new TypeToken<HashMap<String,String>>(){}.getType();
+                HashMap<String,String> data = new Gson().fromJson(json,type);
+                word = data.get("Word");
+                progress = String.valueOf(data.get("Progress"));
+                word = word.toUpperCase();
+                if (Integer.parseInt(progress)+1 <= word.length()){
+                        String source = "<b>" + word.substring(0, Integer.parseInt(progress) + 1) + "</b>" + word.substring(Integer.parseInt(progress) + 1);
+                        wordArea.setText(Html.fromHtml(source, Html.FROM_HTML_SEPARATOR_LINE_BREAK_BLOCKQUOTE));
+                    }
+                String score = data.get("Leader");
+                currentScore = Integer.valueOf(score);
+                setTrophy(currentScore);
+                if(currentScore == 5){
+                    String date = new SimpleDateFormat(datePattern,Locale.ENGLISH).format(new Date());
+                    Message m1 = new Message("Leader has Won the Game." , "UniversalMessageCop",date);
+                    gameWord.child("Progress").setValue(String.valueOf(word.length()));
+                    reference.child(date).setValue(m1);
+                }
+            }
+        });
+
+
 //
 //        players.addChildEventListener(new ChildEventListener() {
 //            @Override
@@ -503,35 +586,36 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
 //            }
 //        });
 
-        gameWord.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                HashMap<String,String> dt = (HashMap<String, String>)dataSnapshot.getValue();
-                if(dt!=null) {
-                    word = dt.get("Word");
-                    progress = String.valueOf(dt.get("Progress"));
-                    word = word.toUpperCase();
-                    if (Integer.parseInt(progress)+1 <= word.length()){
-                        String source = "<b>" + word.substring(0, Integer.parseInt(progress) + 1) + "</b>" + word.substring(Integer.parseInt(progress) + 1);
-                        wordArea.setText(Html.fromHtml(source, Html.FROM_HTML_SEPARATOR_LINE_BREAK_BLOCKQUOTE));
-                    }
-                    String score = dt.get("Leader");
-                    currentScore = Integer.valueOf(score);
-                    setTrophy(currentScore);
-                    if(currentScore == 5){
-                        String date = new SimpleDateFormat("ddMMyyyyhhmmss",Locale.ENGLISH).format(new Date());
-                        Message m1 = new Message("Leader has Won the Game." , "UniversalMessageCop",date);
-                        gameWord.child("Progress").setValue(String.valueOf(word.length()));
-                        reference.child(date).setValue(m1);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+//        listener1 = gameWord.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if(dataSnapshot.getValue()==null)return;
+//                HashMap<String,String> dt = (HashMap<String, String>)dataSnapshot.getValue();
+//                if(dt!=null) {
+//                    word = dt.get("Word");
+//                    progress = String.valueOf(dt.get("Progress"));
+//                    word = word.toUpperCase();
+//                    if (Integer.parseInt(progress)+1 <= word.length()){
+//                        String source = "<b>" + word.substring(0, Integer.parseInt(progress) + 1) + "</b>" + word.substring(Integer.parseInt(progress) + 1);
+//                        wordArea.setText(Html.fromHtml(source, Html.FROM_HTML_SEPARATOR_LINE_BREAK_BLOCKQUOTE));
+//                    }
+//                    String score = dt.get("Leader");
+//                    currentScore = Integer.valueOf(score);
+//                    setTrophy(currentScore);
+//                    if(currentScore == 5){
+//                        String date = new SimpleDateFormat(datePattern,Locale.ENGLISH).format(new Date());
+//                        Message m1 = new Message("Leader has Won the Game." , "UniversalMessageCop",date);
+//                        gameWord.child("Progress").setValue(String.valueOf(word.length()));
+//                        reference.child(date).setValue(m1);
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
 //        contactWord.addValueEventListener(new ValueEventListener() {
 //            @Override
@@ -567,52 +651,38 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
 //            }
 //        });
 
-        games.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getValue(String.class).equals("End")){
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        players.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getValue()==null)return;
-                HashMap<String,String> data = (HashMap<String, String>) Objects.requireNonNull(dataSnapshot).getValue();
-                if(data==null || data.keySet().isEmpty())return;
-                playerList.clear();
-                for(String s: data.keySet()){
-                    if(s.equals("NotThis") && data.get(s).equals("NotThis"))continue;
-                    if(s.equals(new playerName().getName())){playerInTheGame = true;}
-                    if(data.get(s).equals("HOST")){
-                        playerListAdapter.host = s;
-                    }
-                    if(!playerList.contains(s)){
-                        playerList.add(s);
-                    }
-                    if(s.equals(new playerName().getName())){
-                        playerInTheGame = true;
-                    }
-                }
-                playerListAdapter.notifyDataSetChanged();
-                if(!playerInTheGame){
-//                    finishActivity(2);
-                    finish();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+//        listener3 = players.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if(dataSnapshot.getValue()==null)return;
+//                HashMap<String,String> data = (HashMap<String, String>) Objects.requireNonNull(dataSnapshot).getValue();
+//                if(data==null || data.keySet().isEmpty())return;
+//                playerList.clear();
+//                playerInTheGame = false;
+//                for(String s: data.keySet()){
+//                    if(s.equals("NotThis") && data.get(s).equals("NotThis"))continue;
+//                    if(s.equals(new playerName().getName())){playerInTheGame = true;}
+//                    if(data.get(s).equals("HOST")){
+//                        playerListAdapter.host = s;
+//                    }
+//                    if(!playerList.contains(s)){
+//                        playerList.add(s);
+//                    }
+//                    if(s.equals(new playerName().getName())){
+//                        playerInTheGame = true;
+//                    }
+//                }
+//                playerListAdapter.notifyDataSetChanged();
+//                if(!playerInTheGame){
+//                    finish();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
     }
 
@@ -655,7 +725,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
             }
         }
         if(reenter == 0){
-            String date= new SimpleDateFormat("ddMMyyyyhhmmss",Locale.ENGLISH).format(new Date());
+            String date= new SimpleDateFormat(datePattern,Locale.ENGLISH).format(new Date());
             Message  temp = new Message(msg,new playerName().getName(),date);
             editText.setText("");
             reference.child(date).setValue(temp);
@@ -672,6 +742,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         hintTrackSelectIdx = pos;
         HintTrack ht = hintTracks.get(pos);
         hintTrackSelectTimestamp = ht.timeStamp;
+        if(ht.getSelected())return;
         ht.toggleSelected();
         hintTrackAdapter.notifyItemChanged(pos);
         String s = Objects.requireNonNull(hintTrackContactData.get(hintTrackSelectTimestamp)).get("Guesses");
@@ -685,7 +756,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         guessCross();
         recyclerView.setAdapter(tempHintAdapter);
 
-        editText.setVisibility(View.GONE);
+        editText.setVisibility(View.INVISIBLE);
         sendButton.setVisibility(View.INVISIBLE);
         guessBtn.setVisibility(View.VISIBLE);
 
@@ -770,10 +841,10 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
     }
 
     public void guess(View view){
-        guessBtn.setVisibility(View.GONE);
+        guessBtn.setVisibility(View.INVISIBLE);
         sendButton.setVisibility(View.INVISIBLE);
-        challengeBtn.setVisibility(View.GONE);
-        cancelButton.setVisibility(View.GONE);
+        challengeBtn.setVisibility(View.INVISIBLE);
+        cancelButton.setVisibility(View.INVISIBLE);
         editText.setVisibility(View.VISIBLE);
         editText.setText("");
         editText.setHint("Enter guess word..");
@@ -783,15 +854,16 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
     }
 
     public void reset(){
-        guessBtn.setVisibility(View.GONE);
-        cancelButton.setVisibility(View.GONE);
-        challengeBtn.setVisibility(View.GONE);
-        cancelGuess.setVisibility(View.GONE);
-        sendGuess.setVisibility(View.GONE);
+        guessBtn.setVisibility(View.INVISIBLE);
+        cancelButton.setVisibility(View.INVISIBLE);
+        challengeBtn.setVisibility(View.INVISIBLE);
+        cancelGuess.setVisibility(View.INVISIBLE);
+        sendGuess.setVisibility(View.INVISIBLE);
         sendButton.setVisibility(View.VISIBLE);
         editText.setVisibility(View.VISIBLE);
         editText.setText("");
         editText.setHint("Type a hint..");
+        hintTrackView.setVisibility(View.VISIBLE);
         hintTrackSelectTimestamp="";
 
         for(int i=0;i<messagesAdapter.size();i++){
@@ -841,7 +913,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         if(hintTrackSelectTimestamp=="")return;
         if(hintTracks.get(hintTrackSelectIdx).count == 1 ){
             if(guessTime == 2){
-                String date = new SimpleDateFormat("ddMMyyyyhhmmss",Locale.ENGLISH).format(new Date());
+                String date = new SimpleDateFormat(datePattern,Locale.ENGLISH).format(new Date());
                 Message m = new Message("Leader could not guess the word for hint-track#" + hintTracks.get(hintTrackSelectIdx).hintTrackNumber , "UniversalMessageCop",date);
                 reference.child(date).setValue(m);
                 contactWord.child(hintTrackSelectTimestamp).child("Guesses").setValue("0");
@@ -863,13 +935,13 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
                 return;
             }
             if(temp.equals(authorWord.toLowerCase())){
-                String date = new SimpleDateFormat("ddMMyyyyhhmmss",Locale.ENGLISH).format(new Date());
+                String date = new SimpleDateFormat(datePattern,Locale.ENGLISH).format(new Date());
                 Message m = new Message("Leader guessed correctly for hint-track#" + hintTracks.get(hintTrackSelectIdx).hintTrackNumber , "UniversalMessageCop",date);
                 reference.child(date).setValue(m);
                 gameWord.child("Leader").setValue(String.valueOf(currentScore+1));
                 deleteHintTrack();
             }else{
-                String date = new SimpleDateFormat("ddMMyyyyhhmmss",Locale.ENGLISH).format(new Date());
+                String date = new SimpleDateFormat(datePattern,Locale.ENGLISH).format(new Date());
                 Message m = new Message("Leader guessed incorrectly for hint-track#" + hintTracks.get(hintTrackSelectIdx).hintTrackNumber , "UniversalMessageCop",date);
                 reference.child(date).setValue(m);
                 contactWord.child(hintTrackSelectTimestamp).child("Guesses").setValue(String.valueOf(++guessTime));
@@ -911,7 +983,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
             }
             authorWord = authorWord.toLowerCase();
             if(temp.equals(authorWord)){
-                String date = new SimpleDateFormat("ddMMyyyyhhmmss",Locale.ENGLISH).format(new Date());
+                String date = new SimpleDateFormat(datePattern,Locale.ENGLISH).format(new Date());
                 Message m = new Message("Leader guessed correctly for hint-track#" + hintTracks.get(hintTrackSelectIdx).hintTrackNumber , "UniversalMessageCop",date);
                 reference.child(date).setValue(m);
                 hintTrackSelectTimestamp = "";
@@ -921,7 +993,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
             }else{
                 editText.setText("");
                 editText.setHint("Sorry");
-                String date = new SimpleDateFormat("ddMMyyyyhhmmss",Locale.ENGLISH).format(new Date());
+                String date = new SimpleDateFormat(datePattern,Locale.ENGLISH).format(new Date());
                 Message m = new Message("Leader guessed incorrectly for hint-track#" + hintTracks.get(hintTrackSelectIdx).hintTrackNumber , "UniversalMessageCop",date);
                 reference.child(date).setValue(m);
                 contactWord.child(hintTrackSelectTimestamp).child("Guesses").setValue(String.valueOf(++guessTime));
@@ -975,16 +1047,16 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
 
                 found =true;
 
-                String date = new SimpleDateFormat("ddMMyyyyhhmmss",Locale.ENGLISH).format(new Date());
+                String date = new SimpleDateFormat(datePattern,Locale.ENGLISH).format(new Date());
                 Message m1 = new Message("Leader challenged hint-track#" + hintTracks.get(hintTrackSelectIdx).hintTrackNumber ,"UniversalMessageCop",date);
                 reference.child(date).setValue(m1);
 
-                date = new SimpleDateFormat("ddMMyyyyhhmmss",Locale.ENGLISH).format(new Date());
+                date = new SimpleDateFormat(datePattern,Locale.ENGLISH).format(new Date());
                 Message m2 = new Message("Contact successful for keyword : " + authorWord.toUpperCase(),"UniversalMessageCop",date);
                 reference.child(date).setValue(m2);
 
                 if(t.equals(word.toLowerCase())){
-                    date = new SimpleDateFormat("ddMMyyyyhhmmss",Locale.ENGLISH).format(new Date());
+                    date = new SimpleDateFormat(datePattern,Locale.ENGLISH).format(new Date());
                     Message m3 = new Message("Players have won the game.","UniversalMessageCop",date);
                     reference.child(date).setValue(m3);
                     progress = String.valueOf(word.length());
@@ -996,11 +1068,11 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
             }
         }
         if(!found) {
-            String date = new SimpleDateFormat("ddMMyyyyhhmmss",Locale.ENGLISH).format(new Date());
+            String date = new SimpleDateFormat(datePattern,Locale.ENGLISH).format(new Date());
             Message m1 = new Message("Leader challenged hint-track#" + hintTracks.get(hintTrackSelectIdx).hintTrackNumber , "UniversalMessageCop",date);
             reference.child(date).setValue(m1);
 
-            date = new SimpleDateFormat("ddMMyyyyhhmmss",Locale.ENGLISH).format(new Date());
+            date = new SimpleDateFormat(datePattern,Locale.ENGLISH).format(new Date());
             Message m = new Message("Challenge successful, Contact failed.", "UniversalMessageCop",date);
             reference.child(date).setValue(m);
 
@@ -1013,9 +1085,9 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         if(!playersShown) {
             findViewById(R.id.layout_message_send_leader).setVisibility(View.GONE);
             findViewById(R.id.layout_hint_track_leader).setVisibility(View.GONE);
-            findViewById(R.id.imageView2).setVisibility(View.GONE);
-            findViewById(R.id.message_box_leader).setVisibility(View.GONE);
-            findViewById(R.id.guess_cross_leader).setVisibility(View.GONE);
+            findViewById(R.id.imageView2).setVisibility(View.INVISIBLE);
+            findViewById(R.id.message_box_leader).setVisibility(View.INVISIBLE);
+            findViewById(R.id.guess_cross_leader).setVisibility(View.INVISIBLE);
 
             playersShown = true;
             playerListView.setVisibility(View.VISIBLE);
@@ -1049,7 +1121,6 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
 
     }
 
-
     private void deleteHintTrack(){
         if(hintTrackSelectIdx > hintTracks.size() ||  !hintTracks.get(hintTrackSelectIdx).timeStamp.equals(hintTrackSelectTimestamp)){return;}
         hints.child(hintTrackSelectTimestamp).removeValue();
@@ -1059,7 +1130,6 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         reset();
         hintTrackSelectTimestamp = "";
     }
-
 
     private boolean checkMessage(String s){
         int temp = Integer.valueOf(progress);
@@ -1103,4 +1173,20 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         reset();
         return false;
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        reference.removeEventListener(childEventListener1);
+        hints.removeEventListener(childEventListener2);
+        contactWord.removeEventListener(childEventListener3);
+//        gameWord.removeEventListener(listener1);
+//        players.removeEventListener(listener3);
+    }
+//
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        players.child(new playerName().getName()).removeValue();
+//    }
 }

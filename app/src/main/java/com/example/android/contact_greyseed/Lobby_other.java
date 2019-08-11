@@ -1,7 +1,11 @@
 package com.example.android.contact_greyseed;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,7 +21,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
@@ -25,10 +32,12 @@ import java.util.Objects;
 public class Lobby_other extends AppCompatActivity {
     static DatabaseReference players,ref;
     static ArrayList<String> playerNames;
+    private ValueEventListener mListener1,mListener2;
     RecyclerView playerList;
     PlayersListViewAdapter adapter;
     String gameCode;
     TextView codeView;
+    LiveData<DataSnapshot> liveDataPlayers,liveDataGameStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +66,51 @@ public class Lobby_other extends AppCompatActivity {
         new playerName().setGameCode(gameCode);
         playerList.setClickable(false);
 
-        players.child(gameCode).addValueEventListener(new ValueEventListener() {
+
+//        ViewModelGameStatus viewModelGameStatus = ViewModelProviders.of(this).get(ViewModelGameStatus.class);
+//        liveDataGameStatus = viewModelGameStatus.getDataSnapshotLiveData(gameCode);
+//        liveDataGameStatus.observe(this, new Observer<DataSnapshot>() {
+//            @Override
+//            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+//                if(gameCode == null ||dataSnapshot == null)return;
+//                if(Objects.requireNonNull(dataSnapshot.getValue(String.class)).equals("Begun")){
+//                    start();
+////                    finish();
+//                }else if(Objects.requireNonNull(dataSnapshot.getValue(String.class)).equals("End") || new playerName().getGameCode().equals("")){
+//                    finishActivity(1);
+//                    finish();
+//                }
+//            }
+//        });
+//
+//        ViewModelPlayers viewModelPlayers = ViewModelProviders.of(this).get(ViewModelPlayers.class);
+//        liveDataPlayers = viewModelPlayers.getDataSnapshotLiveData(gameCode);
+//        liveDataPlayers.observe(this, new Observer<DataSnapshot>() {
+//            @Override
+//            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+//                if(dataSnapshot==null || dataSnapshot.getValue() == null){return;}
+//                Object object = dataSnapshot.getValue(Object.class);
+//                String json = new Gson().toJson(object);
+//                Type type = new TypeToken<HashMap<String,String>>(){}.getType();
+//                HashMap<String,String> data = new Gson().fromJson(json,type);
+//                playerNames.clear();
+//                if(data == null || data.keySet().isEmpty())return;
+//                for(String s : data.keySet()){
+//                    if(s.equals("NotThis") && data.get(s).equals("NotThis"))continue;
+//                    if(data.get(s).equals("HOST")){
+//                        adapter.host = s;
+//                    }
+//                    if(!playerNames.contains(s)){
+//                        playerNames.add(s);
+//                    }
+//                }
+//                adapter.notifyDataSetChanged();
+//            }
+//        });
+
+
+
+        mListener1 = players.child(gameCode).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getValue() == null){return;}
@@ -81,16 +134,18 @@ public class Lobby_other extends AppCompatActivity {
 
             }
         });
+
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        ref.addValueEventListener(new ValueEventListener() {
+        mListener2 = ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                while(gameCode == null || dataSnapshot.child(gameCode).getValue()==null){}
+                if(gameCode == null || dataSnapshot.child(gameCode).getValue()==null)return;
 
                 if(dataSnapshot.child(gameCode).getValue(String.class).equals("Begun")){
                     Intent intent = new Intent(Lobby_other.this,player_game_screen.class);
@@ -109,8 +164,23 @@ public class Lobby_other extends AppCompatActivity {
         });
     }
 
+    private void start(){
+        Intent intent = new Intent(Lobby_other.this,player_game_screen.class);
+//        startActivityForResult(intent,1);
+        startActivity(intent);
+    }
+
     public void leave(View view){
         players.child(gameCode).child(new playerName().getName()).removeValue();
         finish();
     }
+
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        if(mListener2!=null)
+//            ref.removeEventListener(mListener2);
+//        if(mListener1 != null)
+//            players.child(gameCode).removeEventListener(mListener1);
+//    }
 }

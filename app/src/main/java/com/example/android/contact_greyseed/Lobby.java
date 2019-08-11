@@ -1,5 +1,8 @@
 package com.example.android.contact_greyseed;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -22,7 +25,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,6 +39,7 @@ import java.util.Random;
 
 public class Lobby extends AppCompatActivity {
     static DatabaseReference ref,players,chat,contactWord,hints,gameWord;
+    private ValueEventListener listener1,listener2,listener3;
     static ArrayList<String> gameCodeName,playerNames;
     ArrayList<Message> messages;
     int mx = 4,n1=0,n2=0;
@@ -41,6 +48,7 @@ public class Lobby extends AppCompatActivity {
     RecyclerView playerList;
     boolean found = false,enterWord = false;
     static PlayersListViewAdapter adapter;
+    LiveData<DataSnapshot> liveDataPlayers,liveDataGameStatus;
 
 
     @Override
@@ -61,10 +69,10 @@ public class Lobby extends AppCompatActivity {
 
         gameCode = findViewById(R.id.gameCode);
         messages = new ArrayList<>();
-        messages.add(new Message("0",new playerName().getName(),new SimpleDateFormat("ddMMyyyyhhmmss",Locale.ENGLISH).format(new Date())));
+        messages.add(new Message("0",new playerName().getName(),new SimpleDateFormat("ddMMyyyyhhmmssSSS",Locale.ENGLISH).format(new Date())));
 
-        gameCodeName = new ArrayList<String>();
-        playerNames = new ArrayList<String>();
+        gameCodeName = new ArrayList<>();
+        playerNames = new ArrayList<>();
         gameCodeName.add("HELLO");
         gameCodeName.add("CATCH");
         gameCodeName.add("MONTE");
@@ -115,7 +123,34 @@ public class Lobby extends AppCompatActivity {
 
     private void check(){
 
-        players.child(name).addValueEventListener(new ValueEventListener() {
+
+//        ViewModelPlayers viewModelPlayers = ViewModelProviders.of(this).get(ViewModelPlayers.class);
+//        liveDataPlayers = viewModelPlayers.getDataSnapshotLiveData(name);
+//        liveDataPlayers.observe(this, new Observer<DataSnapshot>() {
+//            @Override
+//            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+//                if(dataSnapshot==null)return;
+////                Toast.makeText(Lobby.this, dataSnapshot.toString(), Toast.LENGTH_LONG).show();
+//                Object object = dataSnapshot.getValue(Object.class);
+//                String json = new Gson().toJson(object);
+//                Type type = new TypeToken<HashMap<String,String>>(){}.getType();
+//                HashMap<String,String> temp = new Gson().fromJson(json,type);
+//                playerNames.clear();
+//                if(temp == null || temp.keySet().isEmpty())return;
+//                for(String s:   temp.keySet()){
+//                    if(s.equals("NotThis") && temp.get(s).equals("NotThis"))continue;
+//                    if(temp.get(s).equals("HOST")){
+//                        adapter.host = s;
+//                    }
+//                    if(!playerNames.contains(s)){
+//                        playerNames.add(s);
+//                    }
+//                }
+//                adapter.notifyDataSetChanged();
+//            }
+//        });
+
+        listener1 = players.child(name).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 while(dataSnapshot.getValue() == null){}
@@ -140,10 +175,23 @@ public class Lobby extends AppCompatActivity {
             }
         });
 
-        ref.child(name).addValueEventListener(new ValueEventListener() {
+//        ViewModelGameStatus viewModelGameStatus = ViewModelProviders.of(this).get(ViewModelGameStatus.class);
+//        liveDataGameStatus = viewModelGameStatus.getDataSnapshotLiveData(name);
+//        liveDataGameStatus.observe(this, new Observer<DataSnapshot>() {
+//            @Override
+//            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+//                if(dataSnapshot==null)return;
+//                if(gameCode == null || dataSnapshot.getValue()==null)return;
+//                if(Objects.requireNonNull(dataSnapshot.getValue(String.class)).equals("End")){
+//                    finishActivity(2);
+//                    finish();
+//                }
+//            }
+//        });
+        listener2 = ref.child(name).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                while(gameCode == null || dataSnapshot.getValue()==null){}
+                if(gameCode == null || dataSnapshot.getValue()==null)return;
                 if(dataSnapshot.getValue(String.class).equals("End")){
                     finish();
                 }
@@ -176,28 +224,29 @@ public class Lobby extends AppCompatActivity {
         gameWord.child(name).child("Progress").setValue("0");
         gameWord.child(name).child("Leader").setValue("0");
         ref.child(name).setValue("Begun");
-        ref.child(name).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(Objects.requireNonNull(dataSnapshot.getValue(String.class)).equals("Begun")){
-                    Intent intent = new Intent(Lobby.this,leader_game_screen.class);
-                    startActivityForResult(intent,2);
-                    finish();
-                }else if(Objects.requireNonNull(dataSnapshot.getValue(String.class)).equals("End")){
-                    finishActivity(2);
-                    finish();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        Intent intent = new Intent(Lobby.this,leader_game_screen.class);
+        startActivityForResult(intent,2);
+//        listener3 = ref.child(name).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if(Objects.requireNonNull(dataSnapshot.getValue(String.class)).equals("Begun")){
+//                    Intent intent = new Intent(Lobby.this,leader_game_screen.class);
+//                    startActivityForResult(intent,2);
+//                }else if(Objects.requireNonNull(dataSnapshot.getValue(String.class)).equals("End")){
+//                    finishActivity(2);
+//                    finish();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
     }
 
     public void start(View view){
-        if(name == ""){return;}
+        if(name.equals("")){return;}
         if(enterWord){
             enterWord(view);
             return;
@@ -211,12 +260,21 @@ public class Lobby extends AppCompatActivity {
 
     public void cancel(View view){
         players.child(name).child(new playerName().getName()).removeValue();
-        for(String player : playerNames){
-            players.child(name).child(player).removeValue();
-        }
+//        for(String player : playerNames){
+//            players.child(name).child(player).removeValue();
+//        }
         ref.child(name).setValue("End");
         finish();
     }
 
-
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        if(listener1!=null)
+//            players.child(name).removeEventListener(listener1);
+//        if(listener2!=null)
+//            ref.child(name).removeEventListener(listener2);
+//        if(listener3!=null)
+//            ref.child(name).removeEventListener(listener3);
+//    }
 }
