@@ -5,10 +5,27 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
+    <android.support.v7.widget.CardView
+        android:id="@+id/hintTrackIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxWidth="60dp"
+        android:maxHeight="60dp"
+        app:cardCornerRadius="40dp"
+        app:cardElevation="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone">
+
+    </android.support.v7.widget.CardView>
+
     <ImageView
         android:id="@+id/hint_track_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -17,63 +34,78 @@
 
     <ImageView
         android:id="@+id/border_select_hint_track"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/hint_track_icon"
-        app:layout_constraintEnd_toEndOf="@+id/hint_track_icon"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/hint_track_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/hintTrackIcon"
+        app:layout_constraintEnd_toEndOf="@+id/hintTrackIcon"
+        app:layout_constraintStart_toStartOf="@+id/hintTrackIcon"
+        app:layout_constraintTop_toTopOf="@+id/hintTrackIcon"
         app:srcCompat="@drawable/hint_track_select"
-        tools:visibility="gone" />
+        tools:visibility="invisible" />
 
-    <ImageView
-        android:id="@+id/imageView5"
+    <android.support.v7.widget.CardView
+        android:id="@+id/hintTrackContactCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/hint_number" />
-
-    <TextView
-        android:id="@+id/hint_track_number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="13dp"
-        android:layout_marginBottom="8dp"
-        android:text="1"
-        android:textAppearance="@android:style/TextAppearance.Material"
-        android:textColor="@color/common_google_signin_btn_text_dark_default"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/hint_track_icon" />
-
-    <ImageView
-        android:id="@+id/hint_bg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="1dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/hints" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/number_of_contacts"
+        <ImageView
+            android:id="@+id/hint_bg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/hints_active"
+            tools:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/number_of_contacts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:fontFamily="sans-serif"
+            android:text="1"
+            android:textColor="@color/common_google_signin_btn_text_dark_default"
+            android:textStyle="bold" />
+
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/hintTrackNum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="7dp"
-        android:fontFamily="sans-serif"
-        android:text=" "
-        android:textColor="@color/common_google_signin_btn_text_dark_default"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="4dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/hint_number"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/hint_track_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:text="1"
+            android:textAppearance="@android:style/TextAppearance.Material"
+            android:textColor="@color/common_google_signin_btn_text_dark_default"
+            android:textStyle="bold" />
+
+    </android.support.v7.widget.CardView>
 
 </android.support.constraint.ConstraintLayout>

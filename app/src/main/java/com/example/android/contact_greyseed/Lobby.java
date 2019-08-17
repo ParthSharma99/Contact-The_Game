@@ -3,6 +3,7 @@ package com.example.android.contact_greyseed;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -11,7 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +30,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -77,6 +82,7 @@ public class Lobby extends AppCompatActivity {
         gameCodeName.add("CATCH");
         gameCodeName.add("MONTE");
         gameCodeName.add("CHASE");
+        enterWord = false;
 
         playerList.setClickable(false);
 //        name = gameCodeName.get(n1) + " " + gameCodeName.get(n2);
@@ -122,39 +128,18 @@ public class Lobby extends AppCompatActivity {
     }
 
     private void check(){
-
-
-//        ViewModelPlayers viewModelPlayers = ViewModelProviders.of(this).get(ViewModelPlayers.class);
-//        liveDataPlayers = viewModelPlayers.getDataSnapshotLiveData(name);
-//        liveDataPlayers.observe(this, new Observer<DataSnapshot>() {
-//            @Override
-//            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
-//                if(dataSnapshot==null)return;
-////                Toast.makeText(Lobby.this, dataSnapshot.toString(), Toast.LENGTH_LONG).show();
-//                Object object = dataSnapshot.getValue(Object.class);
-//                String json = new Gson().toJson(object);
-//                Type type = new TypeToken<HashMap<String,String>>(){}.getType();
-//                HashMap<String,String> temp = new Gson().fromJson(json,type);
-//                playerNames.clear();
-//                if(temp == null || temp.keySet().isEmpty())return;
-//                for(String s:   temp.keySet()){
-//                    if(s.equals("NotThis") && temp.get(s).equals("NotThis"))continue;
-//                    if(temp.get(s).equals("HOST")){
-//                        adapter.host = s;
-//                    }
-//                    if(!playerNames.contains(s)){
-//                        playerNames.add(s);
-//                    }
-//                }
-//                adapter.notifyDataSetChanged();
-//            }
-//        });
-
-        listener1 = players.child(name).addValueEventListener(new ValueEventListener() {
+        Log.d("Check","Here");
+        ViewModelPlayers viewModelPlayers = ViewModelProviders.of(this).get(ViewModelPlayers.class);
+        liveDataPlayers = viewModelPlayers.getDataSnapshotLiveData(name);
+        liveDataPlayers.observe(this, new Observer<DataSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                while(dataSnapshot.getValue() == null){}
-                HashMap<String,String> temp = (HashMap<String,String>) dataSnapshot.getValue();
+            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+                if(dataSnapshot==null)return;
+//                Toast.makeText(Lobby.this, dataSnapshot.toString(), Toast.LENGTH_LONG).show();
+                Object object = dataSnapshot.getValue(Object.class);
+                String json = new Gson().toJson(object);
+                Type type = new TypeToken<HashMap<String,String>>(){}.getType();
+                HashMap<String,String> temp = new Gson().fromJson(json,type);
                 playerNames.clear();
                 if(temp == null || temp.keySet().isEmpty())return;
                 for(String s:   temp.keySet()){
@@ -168,47 +153,70 @@ public class Lobby extends AppCompatActivity {
                 }
                 adapter.notifyDataSetChanged();
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
         });
 
-//        ViewModelGameStatus viewModelGameStatus = ViewModelProviders.of(this).get(ViewModelGameStatus.class);
-//        liveDataGameStatus = viewModelGameStatus.getDataSnapshotLiveData(name);
-//        liveDataGameStatus.observe(this, new Observer<DataSnapshot>() {
+//        listener1 = players.child(name).addValueEventListener(new ValueEventListener() {
 //            @Override
-//            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
-//                if(dataSnapshot==null)return;
-//                if(gameCode == null || dataSnapshot.getValue()==null)return;
-//                if(Objects.requireNonNull(dataSnapshot.getValue(String.class)).equals("End")){
-//                    finishActivity(2);
-//                    finish();
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                while(dataSnapshot.getValue() == null){}
+//                HashMap<String,String> temp = (HashMap<String,String>) dataSnapshot.getValue();
+//                playerNames.clear();
+//                if(temp == null || temp.keySet().isEmpty())return;
+//                for(String s:   temp.keySet()){
+//                    if(s.equals("NotThis") && temp.get(s).equals("NotThis"))continue;
+//                    if(temp.get(s).equals("HOST")){
+//                        adapter.host = s;
+//                    }
+//                    if(!playerNames.contains(s)){
+//                        playerNames.add(s);
+//                    }
 //                }
+//                adapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
 //            }
 //        });
-        listener2 = ref.child(name).addValueEventListener(new ValueEventListener() {
+
+        ViewModelGameStatus viewModelGameStatus = ViewModelProviders.of(this).get(ViewModelGameStatus.class);
+        liveDataGameStatus = viewModelGameStatus.getDataSnapshotLiveData(name);
+        liveDataGameStatus.observe(this, new Observer<DataSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+                if(dataSnapshot==null)return;
                 if(gameCode == null || dataSnapshot.getValue()==null)return;
-                if(dataSnapshot.getValue(String.class).equals("End")){
+                if(Objects.requireNonNull(dataSnapshot.getValue(String.class)).equals("End")){
+                    finishActivity(2);
                     finish();
                 }
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
         });
+//        listener2 = ref.child(name).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if(gameCode == null || dataSnapshot.getValue()==null)return;
+//                if(dataSnapshot.getValue(String.class).equals("End")){
+//                    finish();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
     }
 
 
 
     public void enterWord(View view){
+        Log.d("Enter","Here");
+        enterWord = false;
         EditText text = findViewById(R.id.contactWordEnter);
+        closeKeyboard();
         gameWord = FirebaseDatabase.getInstance().getReference("GameWord");
         contactWord = FirebaseDatabase.getInstance().getReference("ContactWord").child(new playerName().getGameCode());
         contactWord.child("Status").setValue("No Contact");
@@ -218,6 +226,9 @@ public class Lobby extends AppCompatActivity {
         if(s.contains(" ") || s.equals("")){
             text.setText("");
             text.setHint("ENTER WORD");
+//            UIUtil.showKeyboard(this,text);
+            text.requestFocus();
+            showKeyboard();
             return;
         }
         gameWord.child(name).child("Word").setValue(s);
@@ -226,6 +237,7 @@ public class Lobby extends AppCompatActivity {
         ref.child(name).setValue("Begun");
         Intent intent = new Intent(Lobby.this,leader_game_screen.class);
         startActivityForResult(intent,2);
+        finish();
 //        listener3 = ref.child(name).addValueEventListener(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -253,17 +265,22 @@ public class Lobby extends AppCompatActivity {
         }
         findViewById(R.id.playerList).setVisibility(View.GONE);
         EditText text = findViewById(R.id.contactWordEnter);
+//        UIUtil.showKeyboard(this,text);
         text.setVisibility(View.VISIBLE);
         ((Button)view).setText("DONE");
+        text.requestFocus();
+        showKeyboard();
         enterWord = true;
     }
 
     public void cancel(View view){
         players.child(name).child(new playerName().getName()).removeValue();
+        new playerName().setGameCode("");
 //        for(String player : playerNames){
 //            players.child(name).child(player).removeValue();
 //        }
         ref.child(name).setValue("End");
+        closeKeyboard();
         finish();
     }
 
@@ -277,4 +294,26 @@ public class Lobby extends AppCompatActivity {
 //        if(listener3!=null)
 //            ref.child(name).removeEventListener(listener3);
 //    }
+
+    public void showKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
+    }
+
+    public void closeKeyboard(){
+        InputMethodManager inputMethodManager = (InputMethodManager) getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        closeKeyboard();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        closeKeyboard();
+    }
 }

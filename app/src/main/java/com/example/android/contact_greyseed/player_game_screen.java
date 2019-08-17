@@ -5,8 +5,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -16,17 +16,15 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,6 +33,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -86,7 +86,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         playerListView.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
 
 
-        recyclerView.setHasFixedSize(false);
+//        recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         cancelContactBtn = findViewById(R.id.cancelContact);
@@ -142,6 +142,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
 
         hintTrackAdapter = new HintTrackAdapter(hintTracks, this);
         hintTrackView.setAdapter(hintTrackAdapter);
+        hintTrackView.setMinimumHeight(200);
 
         childEventListener1 = reference.addChildEventListener(new ChildEventListener() {
             @Override
@@ -166,15 +167,20 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                 }else{
                     temp.side = 2;
                 }
-                messagesAdapter.add(temp);
-                adapter.notifyItemInserted(messagesAdapter.size()-1);
+                int i = messagesAdapter.size()-1;
+                while(i >0 && messagesAdapter.get(i).timeStamp.compareTo(temp.timeStamp) > 0){
+                    i--;
+                }
+//                if(i<-1){i=0;}
+                messagesAdapter.add(i+1,temp);
+                adapter.notifyItemInserted(i+1);
                 recyclerView.smoothScrollToPosition(adapter.getItemCount());
-                messagesAdapter.sort(new Comparator<Message>() {
-                    @Override
-                    public int compare(Message message, Message t1) {
-                        return message.timeStamp.compareTo(t1.timeStamp);
-                    }
-                });
+//                messagesAdapter.sort(new Comparator<Message>() {
+//                    @Override
+//                    public int compare(Message message, Message t1) {
+//                        return message.timeStamp.compareTo(t1.timeStamp);
+//                    }
+//                });
             }
 
             @Override
@@ -214,7 +220,9 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getValue()==null)return;
                 if(Objects.requireNonNull(dataSnapshot.getKey()).equals("a"))return;
+                int num = messagesAdapter.size();
                 messagesAdapter.clear();
+                adapter.notifyItemRangeRemoved(0,num);
             }
 
             @Override
@@ -246,6 +254,12 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                 hintTracks.add(ht);
                 hintTrackAdapter.notifyDataSetChanged();
                 hintTrackView.smoothScrollToPosition(hintTrackAdapter.getItemCount());
+//                if(editText.isFocused()){
+//                    hintTrackView.requestFocus();
+//                    editText.requestFocus();
+//                }else{
+//                    hintTrackView.requestFocus();
+//                }
             }
 
             @Override
@@ -442,6 +456,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                     Intent intent = new Intent(player_game_screen.this,MainActivity.class);
                     intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(intent);
+                    finish();
                 }
             }
         });
@@ -754,7 +769,8 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         final String temp = editText.getText().toString().trim().toLowerCase();
         if(!checkMessage(temp)){
             editText.setText("");
-            editText.setHint("Check the game word.");return;
+            editText.setHint("Check the game word.");
+            return;
         }
         if(temp.contains(" ") || temp.equals("")){return;}
             if(adapter.getSelectedCount() > 0) {
@@ -785,9 +801,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
             cancelContactBtn.setVisibility(View.INVISIBLE);
             editText.setText("");
             editText.setHint("Type a hint..");
-
-
-
+            reset();
     }
 
     public void addHints(View view){
@@ -801,7 +815,11 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         editText.setHint("Enter your contact word..");
         adapter.state =0;
         adapter.notifyDataSetChanged();
+//        UIUtil.showKeyboard(this,editText);
+        editText.requestFocus();
+        showKeyboard();
     }
+
 
     public void reset(){
         addButton.setVisibility(View.INVISIBLE);
@@ -814,7 +832,9 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         contactWordSendBtn.setVisibility(View.INVISIBLE);
         cancelContactBtn.setVisibility(View.INVISIBLE);
         contactedWord.setVisibility(View.INVISIBLE);
-        recyclerView.setAdapter(adapter);
+        findViewById(R.id.linearLayoutGuess).setVisibility(View.INVISIBLE);
+
+//        recyclerView.setAdapter(adapter);
         recyclerView.smoothScrollToPosition(adapter.getItemCount());
         hintTrackView.setVisibility(View.VISIBLE);
         sendButton.setVisibility(View.VISIBLE);
@@ -847,22 +867,25 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
                     super.onAnimationEnd(animation);
                     playerListView.setVisibility(View.GONE);
                     playerListGameCode.setVisibility(View.GONE);
-
                 }
             });
-            findViewById(R.id.imageView).animate().alpha(0).setDuration(shortAnimationDuration).setListener(new AnimatorListenerAdapter() {
+            findViewById(R.id.guessCrossContainer).animate().alpha(0f).setDuration(shortAnimationDuration).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    findViewById(R.id.imageView).setVisibility(View.VISIBLE);
-                    findViewById(R.id.imageView).animate().alpha(1);
+                    findViewById(R.id.guessCrossContainer).setAlpha(1f);
+                    findViewById(R.id.guessCrossContainer).setVisibility(View.VISIBLE);
                     findViewById(R.id.layout_message_send).setVisibility(View.VISIBLE);
                     findViewById(R.id.layout_hint_track).setVisibility(View.VISIBLE);
                     findViewById(R.id.message_box).setVisibility(View.VISIBLE);
-                    findViewById(R.id.linearLayout).setVisibility(View.VISIBLE);
+                    if(!hintTrackSelectTimestamp.equals("")){
+                        findViewById(R.id.linearLayoutGuess).setVisibility(View.VISIBLE);
+                    }
                 }
             });
         }
+        recyclerView.setAdapter(adapter);
+        recyclerView.smoothScrollToPosition(adapter.getItemCount());
         guessCross();
     }
 
@@ -916,6 +939,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
             msg.add(messagesAdapter.get(i));
         }
         MessageAdapter tempHintAdapter = new MessageAdapter(msg,player_game_screen.this);
+        findViewById(R.id.linearLayoutGuess).setVisibility(View.VISIBLE);
         guessCross();
         recyclerView.setAdapter(tempHintAdapter);
 
@@ -961,7 +985,17 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
 
     @Override
     public void onMessageClick(int pos) {
-
+//        addButton.setVisibility(View.INVISIBLE);
+        cancelButton.setVisibility(View.INVISIBLE);
+        contactButton.setVisibility(View.INVISIBLE);
+        cancelContactBtn.setVisibility(View.INVISIBLE);
+        deleteTrackBtn.setVisibility(View.INVISIBLE);
+        breakContactBtn.setVisibility(View.INVISIBLE);
+        contactButton.setVisibility(View.INVISIBLE);
+        contactWordSendBtn.setVisibility(View.INVISIBLE);
+        cancelContactBtn.setVisibility(View.INVISIBLE);
+        contactedWord.setVisibility(View.INVISIBLE);
+        findViewById(R.id.linearLayoutGuess).setVisibility(View.INVISIBLE);
         if(pos>=0 && pos < messagesAdapter.size()){
             messagesAdapter.get(pos).toggleSelect();
             if(messagesAdapter.get(pos).isSelected()){
@@ -1010,6 +1044,9 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         cancelButton.setVisibility(View.VISIBLE);
         contactButton.setVisibility(View.VISIBLE);
         change =true;
+//        UIUtil.showKeyboard(this,editText);
+        editText.requestFocus();
+        showKeyboard();
     }
 
     public void makeContact(View view){
@@ -1049,9 +1086,9 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         if(!playersShown) {
             findViewById(R.id.layout_message_send).setVisibility(View.GONE);
             findViewById(R.id.layout_hint_track).setVisibility(View.GONE);
-            findViewById(R.id.imageView).setVisibility(View.INVISIBLE);
+            findViewById(R.id.guessCrossContainer).setVisibility(View.INVISIBLE);
             findViewById(R.id.message_box).setVisibility(View.INVISIBLE);
-            findViewById(R.id.linearLayout).setVisibility(View.INVISIBLE);
+            findViewById(R.id.linearLayoutGuess).setVisibility(View.INVISIBLE);
             playersShown = true;
             playerListView.setVisibility(View.VISIBLE);
             playerListGameCode.setVisibility(View.VISIBLE);
@@ -1067,21 +1104,25 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
 
                 }
             });
-            findViewById(R.id.imageView).animate().alpha(0).setDuration(shortAnimationDuration).setListener(new AnimatorListenerAdapter() {
+            findViewById(R.id.guessCrossContainer).animate().alpha(0).setDuration(shortAnimationDuration).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    findViewById(R.id.imageView).setVisibility(View.VISIBLE);
+                    findViewById(R.id.guessCrossContainer).setAlpha(1f);
+                    findViewById(R.id.guessCrossContainer).setVisibility(View.VISIBLE);
                     findViewById(R.id.layout_message_send).setVisibility(View.VISIBLE);
                     findViewById(R.id.layout_hint_track).setVisibility(View.VISIBLE);
                     findViewById(R.id.message_box).setVisibility(View.VISIBLE);
-                    findViewById(R.id.linearLayout).setVisibility(View.VISIBLE);
+                    if(!hintTrackSelectTimestamp.equals("")){
+                        findViewById(R.id.linearLayoutGuess).setVisibility(View.VISIBLE);
+                    }
                 }
             });
         }
     }
 
     private boolean checkMessage(String s){
+        if(s.equals("")){return false;}
         int temp = Integer.valueOf(progress);
         String t = word.toLowerCase();
         s = s.toLowerCase();
@@ -1094,8 +1135,22 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
     public void leave(View view){
         players.child(new playerName().getName()).removeValue();
         new playerName().setGameCode("");
+        closeKeyboard();
+        Intent intent = new Intent(player_game_screen.this,MainActivity.class);
+        intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+        startActivity(intent);
         finish();
 //        finishActivity(1);
+    }
+
+    public void showKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
+    }
+
+    public void closeKeyboard(){
+        InputMethodManager inputMethodManager = (InputMethodManager) getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
 
     @Override
@@ -1105,21 +1160,27 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
     }
 
 
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         reference.removeEventListener(childEventListener1);
         hints.removeEventListener(childEventListener2);
         contactWord.removeEventListener(childEventListener3);
+        new playerName().setGameCode("");
+        closeKeyboard();
 //        gameWord.removeEventListener(listener1);
 //        games.removeEventListener(listener2);
 //        players.removeEventListener(listener3);
-        Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show();
+
+//        Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show();
     }
 
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
+    @Override
+    protected void onStop() {
+        super.onStop();
 //        players.child(new playerName().getName()).removeValue();
-//    }
+        closeKeyboard();
+    }
 }

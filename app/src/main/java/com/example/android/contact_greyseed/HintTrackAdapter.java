@@ -3,6 +3,7 @@ package com.example.android.contact_greyseed;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,15 +42,18 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
         }else{
             ((ViewHolder)viewHolder).icon.setVisibility(View.VISIBLE);
         }
+
+
         ((ViewHolder)viewHolder).number.setText(String.valueOf(hintTrack.hintTrackNumber));
 
 //        ((ViewHolder)viewHolder).letter.setText(String.valueOf(hintTrack.author.toUpperCase().charAt(0)));
         if(hintTrack.count > 1){
             ((ViewHolder)viewHolder).no_contacts.setText(String.valueOf(hintTrack.count));
             ((ViewHolder)viewHolder).state_no_contacts.setImageResource(R.drawable.hints_active);
+            ((ViewHolder)viewHolder).contactsBg.setVisibility(View.VISIBLE);
         }else{
-
             ((ViewHolder)viewHolder).state_no_contacts.setImageResource(R.drawable.hints);
+            ((ViewHolder)viewHolder).contactsBg.setVisibility(View.INVISIBLE);
         }
 
 //        ((ViewHolder)viewHolder).letter.setText(hintTrack.getName().charAt(0));
@@ -63,6 +67,7 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
         public ImageView state_no_contacts,icon;
         public TextView number;
         public TextView no_contacts;
+        public CardView contactsBg,shadowIcon;
 
         OnHintClickListener clickListener;
         public ViewHolder(@NonNull View itemView, OnHintClickListener listener) {
@@ -71,6 +76,8 @@ public class HintTrackAdapter extends RecyclerView.Adapter {
             state_no_contacts = itemView.findViewById(R.id.hint_bg);
             number = itemView.findViewById(R.id.hint_track_number);
             no_contacts = itemView.findViewById(R.id.number_of_contacts);
+            contactsBg = itemView.findViewById(R.id.hintTrackContactCount);
+            shadowIcon = itemView.findViewById(R.id.hintTrackIcon);
             this.clickListener = listener;
             itemView.setOnClickListener(this);
         }

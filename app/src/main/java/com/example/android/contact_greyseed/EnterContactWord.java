@@ -54,8 +54,10 @@ public class EnterContactWord extends AppCompatActivity {
                 if(dataSnapshot.getValue(String.class) == "Begun"){
                     Intent intent = new Intent(EnterContactWord.this,leader_game_screen.class);
                     startActivityForResult(intent,2);
+                    finish();
                 }else{
                     finishActivity(2);
+                    finish();
                 }
             }
 

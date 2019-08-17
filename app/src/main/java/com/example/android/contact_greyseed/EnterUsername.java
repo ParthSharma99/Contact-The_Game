@@ -1,10 +1,12 @@
 package com.example.android.contact_greyseed;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -16,6 +18,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil;
+
 public class EnterUsername extends AppCompatActivity {
     EditText username;
     private FirebaseAuth auth;
@@ -25,12 +29,18 @@ public class EnterUsername extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_username);
         username = findViewById(R.id.username);
+        username.requestFocus();
         auth = FirebaseAuth.getInstance();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showKeyboard();
+    }
 
     public void enter(View view){
-
+        closeKeyboard();
         final EditText username = findViewById(R.id.username);
         new playerName().setName(username.getText().toString());
         auth.signInWithEmailAndPassword(username.getText().toString() + "@home.com","password!@#$")
@@ -57,5 +67,25 @@ public class EnterUsername extends AppCompatActivity {
                 });
     }
 
+    public void showKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
+    }
 
+    public void closeKeyboard(){
+        InputMethodManager inputMethodManager = (InputMethodManager) getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        closeKeyboard();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        closeKeyboard();
+    }
 }

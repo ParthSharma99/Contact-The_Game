@@ -18,6 +18,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthProvider;
 
+import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil;
+
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        UIUtil.hideKeyboard(this);
         user = FirebaseAuth.getInstance().getCurrentUser();
         if(user == null){
             Intent intent = new Intent(MainActivity.this,EnterUsername.class);
@@ -45,14 +47,17 @@ public class MainActivity extends AppCompatActivity {
     public void create(View view){
         Intent intent = new Intent(MainActivity.this,Lobby.class);
         startActivity(intent);
+//        finish();
     }
     public void join(View view){
         Intent intent = new Intent(MainActivity.this,EnterCode.class);
         startActivity(intent);
+//        finish();
     }
     public void user(View view){
         Intent intent = new Intent(MainActivity.this,EnterUsername.class);
         startActivity(intent);
+//        finish();
     }
 
     @Override

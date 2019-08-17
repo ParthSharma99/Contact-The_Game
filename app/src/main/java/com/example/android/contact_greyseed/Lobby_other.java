@@ -24,6 +24,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +45,7 @@ public class Lobby_other extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby_other);
-
+        UIUtil.hideKeyboard(this);
         codeView = findViewById(R.id.gameCode_other);
         players = FirebaseDatabase.getInstance().getReference("Players");
         ref = FirebaseDatabase.getInstance().getReference("Games");
@@ -67,54 +69,32 @@ public class Lobby_other extends AppCompatActivity {
         playerList.setClickable(false);
 
 
-//        ViewModelGameStatus viewModelGameStatus = ViewModelProviders.of(this).get(ViewModelGameStatus.class);
-//        liveDataGameStatus = viewModelGameStatus.getDataSnapshotLiveData(gameCode);
-//        liveDataGameStatus.observe(this, new Observer<DataSnapshot>() {
-//            @Override
-//            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
-//                if(gameCode == null ||dataSnapshot == null)return;
-//                if(Objects.requireNonNull(dataSnapshot.getValue(String.class)).equals("Begun")){
-//                    start();
-////                    finish();
-//                }else if(Objects.requireNonNull(dataSnapshot.getValue(String.class)).equals("End") || new playerName().getGameCode().equals("")){
-//                    finishActivity(1);
-//                    finish();
-//                }
-//            }
-//        });
-//
-//        ViewModelPlayers viewModelPlayers = ViewModelProviders.of(this).get(ViewModelPlayers.class);
-//        liveDataPlayers = viewModelPlayers.getDataSnapshotLiveData(gameCode);
-//        liveDataPlayers.observe(this, new Observer<DataSnapshot>() {
-//            @Override
-//            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
-//                if(dataSnapshot==null || dataSnapshot.getValue() == null){return;}
-//                Object object = dataSnapshot.getValue(Object.class);
-//                String json = new Gson().toJson(object);
-//                Type type = new TypeToken<HashMap<String,String>>(){}.getType();
-//                HashMap<String,String> data = new Gson().fromJson(json,type);
-//                playerNames.clear();
-//                if(data == null || data.keySet().isEmpty())return;
-//                for(String s : data.keySet()){
-//                    if(s.equals("NotThis") && data.get(s).equals("NotThis"))continue;
-//                    if(data.get(s).equals("HOST")){
-//                        adapter.host = s;
-//                    }
-//                    if(!playerNames.contains(s)){
-//                        playerNames.add(s);
-//                    }
-//                }
-//                adapter.notifyDataSetChanged();
-//            }
-//        });
-
-
-
-        mListener1 = players.child(gameCode).addValueEventListener(new ValueEventListener() {
+        ViewModelGameStatus viewModelGameStatus = ViewModelProviders.of(this).get(ViewModelGameStatus.class);
+        liveDataGameStatus = viewModelGameStatus.getDataSnapshotLiveData(gameCode);
+        liveDataGameStatus.observe(this, new Observer<DataSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getValue() == null){return;}
-                HashMap<String,String> data = (HashMap<String, String>) Objects.requireNonNull(dataSnapshot).getValue();
+            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+                if(gameCode == null ||dataSnapshot == null)return;
+                if(Objects.requireNonNull(dataSnapshot.getValue(String.class)).equals("Begun")){
+                    start();
+//                    finish();
+                }else if(Objects.requireNonNull(dataSnapshot.getValue(String.class)).equals("End") || new playerName().getGameCode().equals("")){
+                    finishActivity(1);
+                    finish();
+                }
+            }
+        });
+
+        ViewModelPlayers viewModelPlayers = ViewModelProviders.of(this).get(ViewModelPlayers.class);
+        liveDataPlayers = viewModelPlayers.getDataSnapshotLiveData(gameCode);
+        liveDataPlayers.observe(this, new Observer<DataSnapshot>() {
+            @Override
+            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+                if(dataSnapshot==null || dataSnapshot.getValue() == null){return;}
+                Object object = dataSnapshot.getValue(Object.class);
+                String json = new Gson().toJson(object);
+                Type type = new TypeToken<HashMap<String,String>>(){}.getType();
+                HashMap<String,String> data = new Gson().fromJson(json,type);
                 playerNames.clear();
                 if(data == null || data.keySet().isEmpty())return;
                 for(String s : data.keySet()){
@@ -128,12 +108,34 @@ public class Lobby_other extends AppCompatActivity {
                 }
                 adapter.notifyDataSetChanged();
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
         });
+
+
+
+//        mListener1 = players.child(gameCode).addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if(dataSnapshot.getValue() == null){return;}
+//                HashMap<String,String> data = (HashMap<String, String>) Objects.requireNonNull(dataSnapshot).getValue();
+//                playerNames.clear();
+//                if(data == null || data.keySet().isEmpty())return;
+//                for(String s : data.keySet()){
+//                    if(s.equals("NotThis") && data.get(s).equals("NotThis"))continue;
+//                    if(data.get(s).equals("HOST")){
+//                        adapter.host = s;
+//                    }
+//                    if(!playerNames.contains(s)){
+//                        playerNames.add(s);
+//                    }
+//                }
+//                adapter.notifyDataSetChanged();
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
 
 
     }
@@ -142,36 +144,41 @@ public class Lobby_other extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        mListener2 = ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(gameCode == null || dataSnapshot.child(gameCode).getValue()==null)return;
 
-                if(dataSnapshot.child(gameCode).getValue(String.class).equals("Begun")){
-                    Intent intent = new Intent(Lobby_other.this,player_game_screen.class);
-                    startActivityForResult(intent,1);
-                    finish();
-                }else if(dataSnapshot.child(gameCode).getValue(String.class).equals("End") || new playerName().getGameCode().equals("")){
-                    finishActivity(1);
-                    finish();
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+//        mListener2 = ref.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                if(gameCode == null || dataSnapshot.child(gameCode).getValue()==null)return;
+//
+//                if(dataSnapshot.child(gameCode).getValue(String.class).equals("Begun")){
+//                    Intent intent = new Intent(Lobby_other.this,player_game_screen.class);
+//                    startActivityForResult(intent,1);
+//                    finish();
+//                }else if(dataSnapshot.child(gameCode).getValue(String.class).equals("End") || new playerName().getGameCode().equals("")){
+//
+//                    finishActivity(1);
+//                    finish();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
     }
 
     private void start(){
         Intent intent = new Intent(Lobby_other.this,player_game_screen.class);
 //        startActivityForResult(intent,1);
         startActivity(intent);
+        finish();
     }
 
     public void leave(View view){
         players.child(gameCode).child(new playerName().getName()).removeValue();
+        UIUtil.hideKeyboard(this);
         finish();
     }
 
