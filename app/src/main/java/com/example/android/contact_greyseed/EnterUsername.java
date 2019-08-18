@@ -31,16 +31,12 @@ public class EnterUsername extends AppCompatActivity {
         username = findViewById(R.id.username);
         username.requestFocus();
         auth = FirebaseAuth.getInstance();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         showKeyboard();
     }
 
+
     public void enter(View view){
-        closeKeyboard();
+        UIUtil.hideKeyboard(this);
         final EditText username = findViewById(R.id.username);
         new playerName().setName(username.getText().toString());
         auth.signInWithEmailAndPassword(username.getText().toString() + "@home.com","password!@#$")
@@ -72,20 +68,11 @@ public class EnterUsername extends AppCompatActivity {
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
-    public void closeKeyboard(){
-        InputMethodManager inputMethodManager = (InputMethodManager) getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-    }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        closeKeyboard();
-    }
 
     @Override
     protected void onStop() {
         super.onStop();
-        closeKeyboard();
+        UIUtil.hideKeyboard(this);
     }
 }

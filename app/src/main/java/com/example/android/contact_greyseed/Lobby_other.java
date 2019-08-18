@@ -45,7 +45,6 @@ public class Lobby_other extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby_other);
-        UIUtil.hideKeyboard(this);
         codeView = findViewById(R.id.gameCode_other);
         players = FirebaseDatabase.getInstance().getReference("Players");
         ref = FirebaseDatabase.getInstance().getReference("Games");
@@ -178,7 +177,6 @@ public class Lobby_other extends AppCompatActivity {
 
     public void leave(View view){
         players.child(gameCode).child(new playerName().getName()).removeValue();
-        UIUtil.hideKeyboard(this);
         finish();
     }
 

@@ -19,6 +19,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil;
+
 import java.sql.Array;
 import java.util.ArrayList;
 
@@ -59,7 +61,7 @@ public class EnterCode extends AppCompatActivity {
                     toAdd = false;
                 }
                 if(editable.length() == 11){
-                    closeKeyboard();
+                    UIUtil.hideKeyboard(EnterCode.this);
                 }
             }
         });
@@ -82,6 +84,7 @@ public class EnterCode extends AppCompatActivity {
                     Intent intent = new Intent(EnterCode.this,Lobby_other.class);
                     intent.putExtra("gameCode",txt);
                     startActivity(intent);
+                    finish();
                 }
 
             }
@@ -100,20 +103,16 @@ public class EnterCode extends AppCompatActivity {
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
-    public void closeKeyboard(){
-        InputMethodManager inputMethodManager = (InputMethodManager) getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        closeKeyboard();
+        UIUtil.hideKeyboard(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        closeKeyboard();
+        UIUtil.hideKeyboard(this);
     }
 }

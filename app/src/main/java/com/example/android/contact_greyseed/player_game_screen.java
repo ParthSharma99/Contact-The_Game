@@ -1135,10 +1135,11 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
     public void leave(View view){
         players.child(new playerName().getName()).removeValue();
         new playerName().setGameCode("");
-        closeKeyboard();
-        Intent intent = new Intent(player_game_screen.this,MainActivity.class);
-        intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
-        startActivity(intent);
+
+        UIUtil.hideKeyboard(this);
+//        Intent intent = new Intent(player_game_screen.this,MainActivity.class);
+//        intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+//        startActivity(intent);
         finish();
 //        finishActivity(1);
     }
@@ -1148,10 +1149,6 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
-    public void closeKeyboard(){
-        InputMethodManager inputMethodManager = (InputMethodManager) getApplication().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -1169,7 +1166,7 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
         hints.removeEventListener(childEventListener2);
         contactWord.removeEventListener(childEventListener3);
         new playerName().setGameCode("");
-        closeKeyboard();
+        UIUtil.hideKeyboard(this);
 //        gameWord.removeEventListener(listener1);
 //        games.removeEventListener(listener2);
 //        players.removeEventListener(listener3);
@@ -1181,6 +1178,6 @@ public class player_game_screen extends AppCompatActivity implements HintTrackAd
     protected void onStop() {
         super.onStop();
 //        players.child(new playerName().getName()).removeValue();
-        closeKeyboard();
+        UIUtil.hideKeyboard(this);
     }
 }

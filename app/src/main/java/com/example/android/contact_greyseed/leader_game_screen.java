@@ -866,13 +866,12 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         editText.setHint("Enter guess word..");
         cancelGuess.setVisibility(View.VISIBLE);
         sendGuess.setVisibility(View.VISIBLE);
-//        UIUtil.showKeyboard(this,editText);
         editText.requestFocus();
         showKeyboard();
     }
 
     public void reset(){
-        closeKeyboard();
+        UIUtil.hideKeyboard(this);
         guessBtn.setVisibility(View.GONE);
         cancelButton.setVisibility(View.INVISIBLE);
         challengeBtn.setVisibility(View.GONE);
@@ -1083,7 +1082,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
                     date = new SimpleDateFormat(datePattern,Locale.ENGLISH).format(new Date());
                     Message m3 = new Message("Players have won the game.","UniversalMessageCop",date);
                     reference.child(date).setValue(m3);
-                    progress = String.valueOf(word.length());
+                    progress = String.valueOf(word.length()-1);
                     gameWord.child("Progress").setValue(progress);
                 }
 
@@ -1174,7 +1173,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
 
     private void exit(){
         games.setValue("End");
-        closeKeyboard();
+        UIUtil.hideKeyboard(this);
         for(String msgDel : msgTimeStamp){
             reference.child(msgDel).removeValue();
         }
@@ -1218,7 +1217,7 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
         reference.removeEventListener(childEventListener1);
         hints.removeEventListener(childEventListener2);
         contactWord.removeEventListener(childEventListener3);
-        closeKeyboard();
+        UIUtil.hideKeyboard(this);
 //        gameWord.removeEventListener(listener1);
 //        players.removeEventListener(listener3);
     }
@@ -1227,6 +1226,6 @@ public class leader_game_screen extends AppCompatActivity implements HintTrackAd
     protected void onStop() {
         super.onStop();
 //        players.child(new playerName().getName()).removeValue();
-        closeKeyboard();
+        UIUtil.hideKeyboard(this);
     }
 }

@@ -13,6 +13,7 @@
         android:layout_marginTop="120dp"
         android:background="@null"
         android:hint="USERNAME"
+        android:letterSpacing="0.25"
         android:inputType="textCapCharacters|textNoSuggestions|textVisiblePassword"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"

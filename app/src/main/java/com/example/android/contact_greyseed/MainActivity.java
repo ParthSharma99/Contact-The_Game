@@ -9,6 +9,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,7 +21,6 @@ import com.google.firebase.auth.PhoneAuthProvider;
 
 import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil;
 
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     private FirebaseUser user;
@@ -64,4 +64,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         return false;
     }
+
+
 }
