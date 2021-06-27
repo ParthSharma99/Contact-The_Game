@@ -1,4 +1,4 @@
-# Contact_GreySeed
+# Contact - The Game
 
 The challenge in working on this game began with modifying it to make it mobile compatible so players from around the globe can play the same game with each other in real-time.
 
